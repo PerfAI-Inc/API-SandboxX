@@ -81,7 +81,6 @@ paths:
                   timestamp:
                     type: string
                     format: date-time
-
   /api/orders:
     get:
       summary: Get a list of orders that ignores sorting parameters
@@ -91,6 +90,7 @@ paths:
       parameters:
         - in: query
           name: sortField
+          required: true
           schema:
             type: string
             example: date
@@ -99,6 +99,7 @@ paths:
             Examples: date, total, status
         - in: query
           name: sortOrder
+          required: true
           schema:
             type: string
             enum: [asc, desc]
