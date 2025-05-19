@@ -2,9 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-// Import routers
-const basicTestRouter = require("./routes/basicTest");
-const patientRouter = require("./routes/patient");
+// Import routers for new endpoints
+const usersRouter = require("./routes/users");
+const productsRouter = require("./routes/products");
+const ordersRouter = require("./routes/orders");
+const tasksRouter = require("./routes/tasks");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,8 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 // Register routers
-app.use("/api/test", basicTestRouter);
-app.use("/patient", patientRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/orders", ordersRouter);
+app.use("/api/tasks", tasksRouter);
 
 // Root route - documentation
 app.get("/", (req, res) => {
@@ -23,53 +27,36 @@ app.get("/", (req, res) => {
     name: "PerfAI Test Endpoints",
     description: "API endpoints for performance testing",
     endpoints: [
-      { path: "/api/test/simple", method: "GET", description: "Simple 200 OK response" },
       {
-        path: "/api/test/delay/:ms",
+        path: "/api/users",
         method: "GET",
-        description: "Response with specified delay in ms",
+        description: "Returns a list of users with support for sorting",
+        query: "sort (+name, -name, +age, -age)",
+        behavior: "Correctly implements sorting",
       },
-      { path: "/api/test/echo", method: "POST", description: "Echoes back the request body" },
       {
-        path: "/api/test/largepayload/:size",
+        path: "/api/products",
         method: "GET",
-        description: "Returns payload with specified number of items",
+        description: "Returns a list of products with support for sorting",
+        query: "sortBy (name:asc, name:desc, price:asc, price:desc)",
+        behavior: "Correctly implements sorting with different format",
       },
       {
-        path: "/api/test/cpu/:load",
+        path: "/api/orders",
         method: "GET",
-        description: "Simulates CPU load (higher number = more load)",
+        description: "Returns a list of orders",
+        query: "sortOrder (asc, desc), sortField (date, total, etc.)",
+        behavior: "Ignores sorting parameters",
       },
       {
-        path: "/api/test/status/:code",
+        path: "/api/tasks",
         method: "GET",
-        description: "Returns specified HTTP status code",
-      },
-
-      // Patient history record endpoints
-      { path: "/patient/history/record", method: "GET", description: "Get patient history record" },
-      {
-        path: "/patient/history/record/modify",
-        method: "POST",
-        description: "Create patient history record",
-      },
-      {
-        path: "/patient/history/record/modify/:id",
-        method: "DELETE",
-        description: "Delete patient history record",
-      },
-      {
-        path: "/patient/history/record/update/:id",
-        method: "PUT",
-        description: "Update patient history record",
-      },
-      {
-        path: "/patient/history/record/update/modify/:id",
-        method: "PATCH",
-        description: "Partially update patient history record",
+        description: "Returns a list of tasks",
+        query: "order (asc, desc)",
+        behavior: "Poorly implements sorting - always sorts in ascending order",
       },
     ],
-    version: "1.0.0",
+    version: "2.0.0",
   });
 });
 
