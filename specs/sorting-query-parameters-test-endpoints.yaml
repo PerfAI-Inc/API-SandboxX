@@ -17,6 +17,7 @@ paths:
       parameters:
         - in: query
           name: sort
+          required: true
           schema:
             type: string
             example: +name
@@ -54,6 +55,7 @@ paths:
       parameters:
         - in: query
           name: sortBy
+          required: true
           schema:
             type: string
             example: name:asc
@@ -145,6 +147,7 @@ paths:
       parameters:
         - in: query
           name: order
+          required: true
           schema:
             type: string
             enum: [asc, desc]
