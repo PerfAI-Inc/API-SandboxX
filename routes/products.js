@@ -49,4 +49,39 @@ router.get("/", (req, res) => {
   });
 });
 
+/**
+ * Products Update Endpoint - Updates a product with required fields
+ * PUT /api/products/:id
+ * Required body fields:
+ *   - name: String - Product name
+ *   - price: Number - Product price
+ *   - category: String - Product category
+ */
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, price, category } = req.body;
+
+  // Check if all required fields are provided
+  if (!name || !price || !category) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Missing required fields: name, price, and category are all required",
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  const updatedProduct = {
+    id,
+    name,
+    price,
+    category,
+  };
+
+  res.status(200).json({
+    status: "success",
+    data: updatedProduct,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 module.exports = router;

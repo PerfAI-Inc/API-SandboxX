@@ -1,0 +1,101 @@
+openapi: 3.0.0
+info:
+  title: Individual Body Field Test API
+  description: API endpoint for testing required body fields validation
+  version: 1.0.0
+servers:
+  - url: http://13.93.150.111:3000/
+    description: Development server
+
+paths:
+  /api/products/{id}:
+    put:
+      summary: Update a product with required fields
+      description: |
+        Updates an existing product. All three fields (name, price, category) 
+        are required. The request will fail if any of the required fields is missing.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the product to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdateRequest"
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: "#/components/schemas/Product"
+                  timestamp:
+                    type: string
+                    format: date-time
+        "400":
+          description: Bad request - Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Missing required fields: name, price, and category are all required"
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "p001"
+        name:
+          type: string
+          example: "Laptop"
+        price:
+          type: number
+          format: float
+          example: 1200
+        category:
+          type: string
+          example: "Electronics"
+
+    ProductUpdateRequest:
+      type: object
+      required:
+        - name
+        - price
+        - category
+      properties:
+        name:
+          type: string
+          example: "Laptop Pro"
+          description: "The product name"
+        price:
+          type: number
+          format: float
+          example: 1500
+          description: "The product price"
+        category:
+          type: string
+          example: "Electronics"
+          description: "The product category"
