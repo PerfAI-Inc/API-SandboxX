@@ -7,6 +7,7 @@ const usersRouter = require("./routes/users");
 const productsRouter = require("./routes/products");
 const ordersRouter = require("./routes/orders");
 const tasksRouter = require("./routes/tasks");
+const remediationRouter = require("./routes/automated-code-remediation");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/tasks", tasksRouter);
+app.use("/api/remediation", remediationRouter);
 
 // Root route - documentation
 app.get("/", (req, res) => {
