@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const openapi = require("@wesleytodd/openapi");
 
 // Import routers for new endpoints
 const usersRouter = require("./routes/users");
@@ -16,6 +17,20 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Configure OpenAPI
+app.use(
+  openapi({
+    openapi: "3.0.0",
+    info: {
+      title: "PerfAI Test Endpoints",
+      description: "API endpoints for performance testing",
+      version: "2.0.0",
+    },
+    ui: true,
+    explorer: true,
+  })
+);
+
 // Register routers
 app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
@@ -23,47 +38,13 @@ app.use("/api/orders", ordersRouter);
 app.use("/api/tasks", tasksRouter);
 app.use("/api/remediation", remediationRouter);
 
-// Root route - documentation
+// Root route - redirect to API documentation
 app.get("/", (req, res) => {
-  res.json({
-    name: "PerfAI Test Endpoints",
-    description: "API endpoints for performance testing",
-    endpoints: [
-      {
-        path: "/api/users",
-        method: "GET",
-        description: "Returns a list of users with support for sorting",
-        query: "sort (+name, -name, +age, -age)",
-        behavior: "Correctly implements sorting",
-      },
-      {
-        path: "/api/products",
-        method: "GET",
-        description: "Returns a list of products with support for sorting",
-        query: "sortBy (name:asc, name:desc, price:asc, price:desc)",
-        behavior: "Correctly implements sorting with different format",
-      },
-      {
-        path: "/api/orders",
-        method: "GET",
-        description: "Returns a list of orders",
-        query: "sortOrder (asc, desc), sortField (date, total, etc.)",
-        behavior: "Ignores sorting parameters",
-      },
-      {
-        path: "/api/tasks",
-        method: "GET",
-        description: "Returns a list of tasks",
-        query: "order (asc, desc)",
-        behavior: "Poorly implements sorting - always sorts in ascending order",
-      },
-    ],
-    version: "2.0.0",
-  });
+  res.redirect("/api/docs");
 });
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`API documentation available at http://localhost:${PORT}/`);
+  console.log(`API documentation available at http://localhost:${PORT}/api/docs`);
 });
