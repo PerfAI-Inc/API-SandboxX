@@ -1,5 +1,30 @@
 const express = require("express");
 const router = express.Router();
+const openapi = require("@wesleytodd/openapi");
+
+// Define OpenAPI specifications for this router
+const patientPathSpec = {
+  tags: ["Patient"],
+  summary: "Patient medical records",
+  description: "API endpoints for managing patient medical records",
+  responses: {
+    200: {
+      description: "Successful response",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              status: { type: "string" },
+              id: { type: "string" },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 // ================= PATIENT HISTORY RECORD ENDPOINTS =================
 
@@ -60,4 +85,6 @@ function generateRandomId() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Export both the router and the OpenAPI path specs
 module.exports = router;
+module.exports.apiSpec = patientPathSpec;

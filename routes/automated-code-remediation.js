@@ -1,6 +1,44 @@
-// filepath: c:\Users\yahya\projects\programing\webdev\client-projects\PerfAI\Perf-Engine-TestEndpoints\routes\automated-code-remediation.js
 const express = require("express");
 const router = express.Router();
+const openapi = require("@wesleytodd/openapi");
+
+// Define the OpenAPI path specifications for this router
+const remediationPathSpec = {
+  tags: ["Code Remediation"],
+  summary: "Automated code remediation endpoints",
+  description: "API endpoints for testing automated code remediation features",
+  responses: {
+    200: {
+      description: "Successful response",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+    201: {
+      description: "Resource created successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              data: { type: "object" },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 // Simple GET endpoint
 router.get("/", (req, res) => {
@@ -57,4 +95,6 @@ router.delete("/:id", (req, res) => {
   });
 });
 
+// Export both the router and the OpenAPI path specs
 module.exports = router;
+module.exports.apiSpec = remediationPathSpec;

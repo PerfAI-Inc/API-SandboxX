@@ -1,5 +1,56 @@
 const express = require("express");
 const router = express.Router();
+const openapi = require("@wesleytodd/openapi");
+
+// Define the product schema
+const productSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    price: { type: "number" },
+    category: { type: "string" },
+  },
+};
+
+// Define the OpenAPI path specifications for this router
+const productsPathSpec = {
+  tags: ["Products"],
+  summary: "Product management endpoints",
+  description: "API endpoints for product CRUD operations with sorting capabilities",
+  parameters: [
+    {
+      name: "sortBy",
+      in: "query",
+      description: "Sort field and order, e.g., name:asc, price:desc",
+      required: false,
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: "Successful response with products list",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              status: { type: "string" },
+              count: { type: "integer" },
+              data: {
+                type: "array",
+                items: productSchema,
+              },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 // Mock products data
 const products = [
@@ -84,4 +135,6 @@ router.put("/:id", (req, res) => {
   });
 });
 
+// Export both the router and the OpenAPI path specs
 module.exports = router;
+module.exports.apiSpec = productsPathSpec;

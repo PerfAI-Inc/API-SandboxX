@@ -1,5 +1,29 @@
 const express = require("express");
 const router = express.Router();
+const openapi = require("@wesleytodd/openapi");
+
+// Define OpenAPI specifications for this router
+const basicTestPathSpec = {
+  tags: ["Basic Tests"],
+  summary: "Basic test endpoints",
+  description: "Basic API endpoints for performance testing",
+  responses: {
+    200: {
+      description: "Successful response",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 // Simple endpoint returning 200 OK
 router.get("/simple", (req, res) => {
@@ -82,4 +106,6 @@ function generateRandomData(size) {
   return data;
 }
 
+// Export both the router and the OpenAPI path specs
 module.exports = router;
+module.exports.apiSpec = basicTestPathSpec;

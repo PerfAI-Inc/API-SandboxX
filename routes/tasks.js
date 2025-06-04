@@ -1,5 +1,59 @@
 const express = require("express");
 const router = express.Router();
+const openapi = require("@wesleytodd/openapi");
+
+// Define the task schema
+const taskSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    title: { type: "string" },
+    priority: { type: "string" },
+    dueDate: { type: "string", format: "date" },
+    status: { type: "string" },
+  },
+};
+
+// Define the OpenAPI path specifications for this router
+const tasksPathSpec = {
+  tags: ["Tasks"],
+  summary: "Task management endpoints",
+  description: "API endpoints for task operations with buggy sorting implementation",
+  parameters: [
+    {
+      name: "order",
+      in: "query",
+      description: "Sort order (asc or desc) - has a bug that ignores this parameter",
+      required: false,
+      schema: {
+        type: "string",
+        enum: ["asc", "desc"],
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: "Successful response with tasks list",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              status: { type: "string" },
+              count: { type: "integer" },
+              data: {
+                type: "array",
+                items: taskSchema,
+              },
+              timestamp: { type: "string", format: "date-time" },
+              requestedOrder: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 // Mock tasks data
 const tasks = [
@@ -46,4 +100,6 @@ router.get("/", (req, res) => {
   });
 });
 
+// Export both the router and the OpenAPI path specs
 module.exports = router;
+module.exports.apiSpec = tasksPathSpec;

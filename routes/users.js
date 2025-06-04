@@ -1,6 +1,57 @@
 const express = require("express");
 const router = express.Router();
+const openapi = require("@wesleytodd/openapi");
 const { generateRandomId } = require("../utils/helpers");
+
+// Create OpenAPI specification for this router
+const userSchema = {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    name: { type: "string" },
+    age: { type: "integer" },
+    email: { type: "string", format: "email" },
+  },
+};
+
+// Define the OpenAPI path specifications for this router
+const usersPathSpec = {
+  tags: ["Users"],
+  summary: "User management endpoints",
+  description: "API endpoints for user CRUD operations with sorting capabilities",
+  parameters: [
+    {
+      name: "sort",
+      in: "query",
+      description: "Sort order. +field for ascending, -field for descending (e.g. +name, -age)",
+      required: false,
+      schema: {
+        type: "string",
+      },
+    },
+  ],
+  responses: {
+    200: {
+      description: "Successful response with users list",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              status: { type: "string" },
+              count: { type: "integer" },
+              data: {
+                type: "array",
+                items: userSchema,
+              },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 // Mock users data
 const users = [
@@ -55,4 +106,6 @@ router.get("/", (req, res) => {
   });
 });
 
+// Export both the router and the OpenAPI path specs
 module.exports = router;
+module.exports.apiSpec = usersPathSpec;
