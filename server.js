@@ -62,6 +62,16 @@ const oapi = openapi({
           timestamp: { type: "string", format: "date-time" },
         },
       },
+      Task: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          title: { type: "string" },
+          priority: { type: "string" },
+          dueDate: { type: "string", format: "date" },
+          status: { type: "string" }
+        }
+      },
       Timestamp: {
         type: "object",
         properties: {

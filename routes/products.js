@@ -14,38 +14,36 @@ const productSchema = {
 
 // Define the OpenAPI path specifications for this router
 const productsPathSpec = {
-  "/": {
-    get: {
-      tags: ["Products"],
-      summary: "Get all products",
-      description: "Returns a list of products with optional sorting",
-      parameters: [
-        {
-          name: "sortBy",
-          in: "query",
-          description: "Sort field and order, e.g., name:asc, price:desc",
-          required: false,
-          schema: {
-            type: "string",
-          },
+  get: {
+    tags: ["Products"],
+    summary: "Get all products",
+    description: "Returns a list of products with optional sorting",
+    parameters: [
+      {
+        name: "sortBy",
+        in: "query",
+        description: "Sort field and order, e.g., name:asc, price:desc",
+        required: false,
+        schema: {
+          type: "string",
         },
-      ],
-      responses: {
-        200: {
-          description: "Successful response with products list",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  status: { type: "string" },
-                  count: { type: "integer" },
-                  data: {
-                    type: "array",
-                    items: productSchema,
-                  },
-                  timestamp: { type: "string", format: "date-time" },
+      },
+    ],
+    responses: {
+      200: {
+        description: "Successful response with products list",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                status: { type: "string" },
+                count: { type: "integer" },
+                data: {
+                  type: "array",
+                  items: productSchema,
                 },
+                timestamp: { type: "string", format: "date-time" },
               },
             },
           },
@@ -53,65 +51,67 @@ const productsPathSpec = {
       },
     },
   },
-  "/{id}": {
-    put: {
-      tags: ["Products"],
-      summary: "Update a product",
-      description: "Updates a product with the specified ID",
-      parameters: [
-        {
-          name: "id",
-          in: "path",
-          required: true,
-          description: "Product ID",
+};
+
+// Define path spec for product by ID
+const productByIdPathSpec = {
+  put: {
+    tags: ["Products"],
+    summary: "Update a product",
+    description: "Updates a product with the specified ID",
+    parameters: [
+      {
+        name: "id",
+        in: "path",
+        required: true,
+        description: "Product ID",
+        schema: {
+          type: "string",
+        },
+      },
+    ],
+    requestBody: {
+      required: true,
+      content: {
+        "application/json": {
           schema: {
-            type: "string",
+            type: "object",
+            required: ["name", "price", "category"],
+            properties: {
+              name: { type: "string" },
+              price: { type: "number" },
+              category: { type: "string" },
+            },
           },
         },
-      ],
-      requestBody: {
-        required: true,
+      },
+    },
+    responses: {
+      200: {
+        description: "Product updated successfully",
         content: {
           "application/json": {
             schema: {
               type: "object",
-              required: ["name", "price", "category"],
               properties: {
-                name: { type: "string" },
-                price: { type: "number" },
-                category: { type: "string" },
+                status: { type: "string" },
+                data: productSchema,
+                timestamp: { type: "string", format: "date-time" },
               },
             },
           },
         },
       },
-      responses: {
-        200: {
-          description: "Product updated successfully",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  status: { type: "string" },
-                  data: productSchema,
-                  timestamp: { type: "string", format: "date-time" },
-                },
-              },
-            },
-          },
-        },
-        400: {
-          description: "Bad request - missing required fields",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  status: { type: "string" },
-                  message: { type: "string" },
-                  timestamp: { type: "string", format: "date-time" },
-                },
+      400: {
+        description: "Bad request - missing required fields",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                status: { type: "string" },
+                message: { type: "string" },
+                timestamp: { type: "string", format: "date-time" },
               },
             },
           },
@@ -206,4 +206,7 @@ router.put("/:id", (req, res) => {
 
 // Export both the router and the OpenAPI path specs
 module.exports = router;
-module.exports.apiSpec = productsPathSpec;
+module.exports.apiSpec = {
+  "/": productsPathSpec,
+  "/{id}": productByIdPathSpec,
+};

@@ -4,7 +4,7 @@ const openapi = require("@wesleytodd/openapi");
 
 // Define OpenAPI specifications for this router
 const patientPathSpec = {
-  "/patient/history/record": {
+  "/history/record": {
     get: {
       tags: ["Patient"],
       summary: "Get patient record",
@@ -29,7 +29,7 @@ const patientPathSpec = {
       },
     },
   },
-  "/patient/history/record/modify": {
+  "/history/record/modify": {
     post: {
       tags: ["Patient"],
       summary: "Create patient record",
@@ -66,7 +66,7 @@ const patientPathSpec = {
       },
     },
   },
-  "/patient/history/record/modify/{id}": {
+  "/history/record/modify/{id}": {
     delete: {
       tags: ["Patient"],
       summary: "Delete patient record",
@@ -102,7 +102,7 @@ const patientPathSpec = {
       },
     },
   },
-  "/patient/history/record/update/{id}": {
+  "/history/record/update/{id}": {
     put: {
       tags: ["Patient"],
       summary: "Update patient record",
@@ -150,7 +150,7 @@ const patientPathSpec = {
       },
     },
   },
-  "/patient/history/record/update/modify/{id}": {
+  "/history/record/update/modify/{id}": {
     patch: {
       tags: ["Patient"],
       summary: "Partially update patient record",

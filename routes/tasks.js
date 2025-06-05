@@ -35,11 +35,17 @@ const tasksPathSpec = {
                   count: {
                     type: "integer",
                     description: "Number of tasks returned",
-                  },
-                  data: {
+                  },                  data: {
                     type: "array",
                     items: {
-                      $ref: "#/components/schemas/Task",
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        title: { type: "string" },
+                        priority: { type: "string" },
+                        dueDate: { type: "string", format: "date" },
+                        status: { type: "string" }
+                      }
                     },
                   },
                   timestamp: {
