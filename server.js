@@ -1,16 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const openapi = require("@wesleytodd/openapi");
 
 // Import routers for endpoints
-const usersRouter = require("./routes/users");
-const productsRouter = require("./routes/products");
-const ordersRouter = require("./routes/orders");
-const tasksRouter = require("./routes/tasks");
 const remediationRouter = require("./routes/automated-code-remediation");
-const basicTestRouter = require("./routes/basicTest");
-const patientRouter = require("./routes/patient");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,27 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 const apiPaths = {
-  "/api/users": {
-    ...usersRouter.apiSpec,
-  },
-  "/api/products": {
-    ...productsRouter.apiSpec,
-  },
-  "/api/orders": {
-    ...ordersRouter.apiSpec,
-  },
-  "/api/tasks": {
-    ...tasksRouter.apiSpec,
-  },
-  "/api/remediation": {
-    ...remediationRouter.apiSpec,
-  },
-  "/api/test": {
-    ...basicTestRouter.apiSpec,
-  },
-  "/patient": {
-    ...patientRouter.apiSpec,
-  },
+  "/api/remediation": remediationRouter.apiSpec,
 };
 
 // Configure OpenAPI with explicit paths
@@ -62,16 +35,6 @@ const oapi = openapi({
           status: { type: "string" },
           message: { type: "string" },
           timestamp: { type: "string", format: "date-time" },
-        },
-      },
-      Task: {
-        type: "object",
-        properties: {
-          id: { type: "string" },
-          title: { type: "string" },
-          priority: { type: "string" },
-          dueDate: { type: "string", format: "date" },
-          status: { type: "string" },
         },
       },
       Timestamp: {
@@ -101,14 +64,7 @@ const oapi = openapi({
 // Use the OpenAPI middleware
 app.use(oapi);
 
-// Register routers with OpenAPI documentation imported from route files
-app.use("/api/users", oapi.path(usersRouter.apiSpec), usersRouter);
-app.use("/api/products", oapi.path(productsRouter.apiSpec), productsRouter);
-app.use("/api/orders", oapi.path(ordersRouter.apiSpec), ordersRouter);
-app.use("/api/tasks", oapi.path(tasksRouter.apiSpec), tasksRouter);
 app.use("/api/remediation", oapi.path(remediationRouter.apiSpec), remediationRouter);
-app.use("/api/test", oapi.path(basicTestRouter.apiSpec), basicTestRouter);
-app.use("/patient", oapi.path(patientRouter.apiSpec), patientRouter);
 
 // Create a reusable error handler
 const errorHandler = (req, res, next) => {
