@@ -19,7 +19,31 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Configure OpenAPI
+const apiPaths = {
+  "/api/users": {
+    ...usersRouter.apiSpec,
+  },
+  "/api/products": {
+    ...productsRouter.apiSpec,
+  },
+  "/api/orders": {
+    ...ordersRouter.apiSpec,
+  },
+  "/api/tasks": {
+    ...tasksRouter.apiSpec,
+  },
+  "/api/remediation": {
+    ...remediationRouter.apiSpec,
+  },
+  "/api/test": {
+    ...basicTestRouter.apiSpec,
+  },
+  "/patient": {
+    ...patientRouter.apiSpec,
+  },
+};
+
+// Configure OpenAPI with explicit paths
 const oapi = openapi({
   openapi: "3.0.0",
   info: {
@@ -60,6 +84,8 @@ const oapi = openapi({
       },
     },
   },
+  // Explicitly provide the paths
+  paths: apiPaths,
 });
 
 // Use the OpenAPI middleware
