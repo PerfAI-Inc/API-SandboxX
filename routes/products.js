@@ -49,6 +49,7 @@ const productsPathSpec = {
           },
         },
       },
+    },
   },
   "/{id}": {
     put: {
