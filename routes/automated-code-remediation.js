@@ -238,9 +238,12 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-// Export both the router and the OpenAPI path specs
-module.exports = router;
-module.exports.apiSpec = {
-  ...remediationPathSpec,
-  "{id}": remediationByIdPathSpec,
+// Create a combined API specification object
+const apiSpec = {
+  "/api/remediation": remediationPathSpec,
+  "/api/remediation/{id}": remediationByIdPathSpec,
 };
+
+// Export the router and the combined API spec
+module.exports = router;
+module.exports.apiSpec = apiSpec;

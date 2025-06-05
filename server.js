@@ -12,10 +12,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const apiPaths = {
-  "/api/remediation": remediationRouter.apiSpec,
-};
-
 // Configure OpenAPI with explicit paths
 const oapi = openapi({
   openapi: "3.0.0",
@@ -24,9 +20,6 @@ const oapi = openapi({
     description: "API endpoints for performance testing",
     version: "2.0.0",
   },
-  ui: true,
-  explorer: true,
-  // Add components that are common across the API
   components: {
     schemas: {
       Error: {
@@ -34,12 +27,6 @@ const oapi = openapi({
         properties: {
           status: { type: "string" },
           message: { type: "string" },
-          timestamp: { type: "string", format: "date-time" },
-        },
-      },
-      Timestamp: {
-        type: "object",
-        properties: {
           timestamp: { type: "string", format: "date-time" },
         },
       },
@@ -57,13 +44,14 @@ const oapi = openapi({
       },
     },
   },
-  // Explicitly provide the paths
-  paths: apiPaths,
+  // Explicitly define paths for the remediation router
+  paths: { ...remediationRouter.apiSpec },
 });
 
 // Use the OpenAPI middleware
 app.use(oapi);
 
+// Mount the remediation router
 app.use("/api/remediation", oapi.path(remediationRouter.apiSpec), remediationRouter);
 
 // Create a reusable error handler
