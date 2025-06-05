@@ -35,7 +35,8 @@ const tasksPathSpec = {
                   count: {
                     type: "integer",
                     description: "Number of tasks returned",
-                  },                  data: {
+                  },
+                  data: {
                     type: "array",
                     items: {
                       type: "object",
@@ -44,8 +45,8 @@ const tasksPathSpec = {
                         title: { type: "string" },
                         priority: { type: "string" },
                         dueDate: { type: "string", format: "date" },
-                        status: { type: "string" }
-                      }
+                        status: { type: "string" },
+                      },
                     },
                   },
                   timestamp: {

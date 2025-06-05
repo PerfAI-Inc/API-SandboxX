@@ -69,8 +69,8 @@ const oapi = openapi({
           title: { type: "string" },
           priority: { type: "string" },
           dueDate: { type: "string", format: "date" },
-          status: { type: "string" }
-        }
+          status: { type: "string" },
+        },
       },
       Timestamp: {
         type: "object",
