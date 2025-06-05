@@ -49,69 +49,66 @@ const productsPathSpec = {
           },
         },
       },
-    },
   },
-};
-
-// Define path spec for product by ID
-const productByIdPathSpec = {
-  put: {
-    tags: ["Products"],
-    summary: "Update a product",
-    description: "Updates a product with the specified ID",
-    parameters: [
-      {
-        name: "id",
-        in: "path",
-        required: true,
-        description: "Product ID",
-        schema: {
-          type: "string",
-        },
-      },
-    ],
-    requestBody: {
-      required: true,
-      content: {
-        "application/json": {
+  "/{id}": {
+    put: {
+      tags: ["Products"],
+      summary: "Update a product",
+      description: "Updates a product with the specified ID",
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "Product ID",
           schema: {
-            type: "object",
-            required: ["name", "price", "category"],
-            properties: {
-              name: { type: "string" },
-              price: { type: "number" },
-              category: { type: "string" },
-            },
+            type: "string",
           },
         },
-      },
-    },
-    responses: {
-      200: {
-        description: "Product updated successfully",
+      ],
+      requestBody: {
+        required: true,
         content: {
           "application/json": {
             schema: {
               type: "object",
+              required: ["name", "price", "category"],
               properties: {
-                status: { type: "string" },
-                data: productSchema,
-                timestamp: { type: "string", format: "date-time" },
+                name: { type: "string" },
+                price: { type: "number" },
+                category: { type: "string" },
               },
             },
           },
         },
       },
-      400: {
-        description: "Bad request - missing required fields",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                status: { type: "string" },
-                message: { type: "string" },
-                timestamp: { type: "string", format: "date-time" },
+      responses: {
+        200: {
+          description: "Product updated successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  data: productSchema,
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+        400: {
+          description: "Bad request - missing required fields",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  message: { type: "string" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
               },
             },
           },
@@ -206,7 +203,4 @@ router.put("/:id", (req, res) => {
 
 // Export both the router and the OpenAPI path specs
 module.exports = router;
-module.exports.apiSpec = {
-  ...productsPathSpec,
-  "/{id}": productByIdPathSpec,
-};
+module.exports.apiSpec = productsPathSpec;
