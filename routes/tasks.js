@@ -3,60 +3,62 @@ const router = express.Router();
 
 // Define the OpenAPI path specifications for this router
 const tasksPathSpec = {
-  get: {
-    tags: ["Tasks"],
-    summary: "Task management endpoints",
-    description: "API endpoints for task operations with buggy sorting implementation",
-    parameters: [
-      {
-        name: "order",
-        in: "query",
-        description: "Sort order (asc or desc) - has a bug that ignores this parameter",
-        required: false,
-        schema: {
-          type: "string",
-          enum: ["asc", "desc"],
+  "/": {
+    get: {
+      tags: ["Tasks"],
+      summary: "Task management endpoints",
+      description: "API endpoints for task operations with buggy sorting implementation",
+      parameters: [
+        {
+          name: "order",
+          in: "query",
+          description: "Sort order (asc or desc) - has a bug that ignores this parameter",
+          required: false,
+          schema: {
+            type: "string",
+            enum: ["asc", "desc"],
+          },
         },
-      },
-    ],
-    responses: {
-      200: {
-        description: "Successful response with tasks list",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                status: {
-                  type: "string",
-                  example: "success",
-                },
-                count: {
-                  type: "integer",
-                  description: "Number of tasks returned",
-                },
-                data: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      id: { type: "string" },
-                      title: { type: "string" },
-                      priority: { type: "string" },
-                      dueDate: { type: "string", format: "date" },
-                      status: { type: "string" },
+      ],
+      responses: {
+        200: {
+          description: "Successful response with tasks list",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    type: "string",
+                    example: "success",
+                  },
+                  count: {
+                    type: "integer",
+                    description: "Number of tasks returned",
+                  },
+                  data: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        title: { type: "string" },
+                        priority: { type: "string" },
+                        dueDate: { type: "string", format: "date" },
+                        status: { type: "string" },
+                      },
                     },
                   },
-                },
-                timestamp: {
-                  type: "string",
-                  format: "date-time",
-                  description: "Response timestamp",
-                },
-                requestedOrder: {
-                  type: "string",
-                  description: "The sort order that was requested",
-                  example: "asc",
+                  timestamp: {
+                    type: "string",
+                    format: "date-time",
+                    description: "Response timestamp",
+                  },
+                  requestedOrder: {
+                    type: "string",
+                    description: "The sort order that was requested",
+                    example: "asc",
+                  },
                 },
               },
             },
