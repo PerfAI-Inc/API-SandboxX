@@ -207,6 +207,6 @@ router.put("/:id", (req, res) => {
 // Export both the router and the OpenAPI path specs
 module.exports = router;
 module.exports.apiSpec = {
-  "/": productsPathSpec,
+  ...productsPathSpec,
   "/{id}": productByIdPathSpec,
 };

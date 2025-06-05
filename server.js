@@ -38,7 +38,9 @@ const apiPaths = {
   "/api/test": {
     ...basicTestRouter.apiSpec,
   },
-  ...patientRouter.apiSpec,
+  "/patient": {
+    ...patientRouter.apiSpec,
+  },
 };
 
 // Configure OpenAPI with explicit paths

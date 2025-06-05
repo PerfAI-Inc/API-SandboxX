@@ -3,6 +3,12 @@ const router = express.Router();
 const openapi = require("@wesleytodd/openapi");
 
 // Define OpenAPI specifications for this router
+// Mock patient data
+const patients = [
+  { id: "p001", name: "John Doe", age: 45, condition: "Hypertension" },
+  { id: "p002", name: "Jane Smith", age: 32, condition: "Diabetes" },
+  { id: "p003", name: "Michael Johnson", age: 58, condition: "Arthritis" },
+];
 const patientPathSpec = {
   "/history/record": {
     get: {
@@ -206,25 +212,28 @@ const patientPathSpec = {
 router.get("/history/record", (req, res) => {
   res.status(200).json({
     status: "success",
-    id: generateRandomId(),
+    id: "p001",
     timestamp: new Date().toISOString(),
   });
 });
 
 // POST - Create Patient Record
 router.post("/history/record/modify", (req, res) => {
-  const id = generateRandomId();
+  const data = req.body;
+  const id = "p" + (Math.floor(Math.random() * 1000) + 1).toString().padStart(3, "0");
+
   res.status(200).json({
     status: "success",
     id: id,
-    data: req.body,
+    data: data,
     timestamp: new Date().toISOString(),
   });
 });
 
 // DELETE - Delete Patient Record
 router.delete("/history/record/modify/:id", (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
+
   res.status(200).json({
     status: "success",
     deleted: id,
@@ -234,22 +243,26 @@ router.delete("/history/record/modify/:id", (req, res) => {
 
 // PUT - Update Patient Record
 router.put("/history/record/update/:id", (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
+  const data = req.body;
+
   res.status(200).json({
     status: "success",
     id: id,
-    updated: req.body,
+    updated: data,
     timestamp: new Date().toISOString(),
   });
 });
 
 // PATCH - Partially Update Patient Record
 router.patch("/history/record/update/modify/:id", (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
+  const data = req.body;
+
   res.status(200).json({
     status: "success",
     id: id,
-    patched: req.body,
+    patched: data,
     timestamp: new Date().toISOString(),
   });
 });
