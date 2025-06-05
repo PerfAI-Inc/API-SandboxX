@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const openapi = require("@wesleytodd/openapi");
 
 // Define the product schema
 const productSchema = {
@@ -15,35 +14,105 @@ const productSchema = {
 
 // Define the OpenAPI path specifications for this router
 const productsPathSpec = {
-  tags: ["Products"],
-  summary: "Product management endpoints",
-  description: "API endpoints for product CRUD operations with sorting capabilities",
-  parameters: [
-    {
-      name: "sortBy",
-      in: "query",
-      description: "Sort field and order, e.g., name:asc, price:desc",
-      required: false,
-      schema: {
-        type: "string",
+  "/": {
+    get: {
+      tags: ["Products"],
+      summary: "Get all products",
+      description: "Returns a list of products with optional sorting",
+      parameters: [
+        {
+          name: "sortBy",
+          in: "query",
+          description: "Sort field and order, e.g., name:asc, price:desc",
+          required: false,
+          schema: {
+            type: "string",
+          },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Successful response with products list",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  count: { type: "integer" },
+                  data: {
+                    type: "array",
+                    items: productSchema,
+                  },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
       },
     },
-  ],
-  responses: {
-    200: {
-      description: "Successful response with products list",
-      content: {
-        "application/json": {
+  },
+  "/{id}": {
+    put: {
+      tags: ["Products"],
+      summary: "Update a product",
+      description: "Updates a product with the specified ID",
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "Product ID",
           schema: {
-            type: "object",
-            properties: {
-              status: { type: "string" },
-              count: { type: "integer" },
-              data: {
-                type: "array",
-                items: productSchema,
+            type: "string",
+          },
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["name", "price", "category"],
+              properties: {
+                name: { type: "string" },
+                price: { type: "number" },
+                category: { type: "string" },
               },
-              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Product updated successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  data: productSchema,
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+        400: {
+          description: "Bad request - missing required fields",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  message: { type: "string" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
             },
           },
         },

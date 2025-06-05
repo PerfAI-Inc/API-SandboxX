@@ -16,35 +16,39 @@ const userSchema = {
 
 // Define the OpenAPI path specifications for this router
 const usersPathSpec = {
-  tags: ["Users"],
-  summary: "User management endpoints",
-  description: "API endpoints for user CRUD operations with sorting capabilities",
-  parameters: [
-    {
-      name: "sort",
-      in: "query",
-      description: "Sort order. +field for ascending, -field for descending (e.g. +name, -age)",
-      required: false,
-      schema: {
-        type: "string",
-      },
-    },
-  ],
-  responses: {
-    200: {
-      description: "Successful response with users list",
-      content: {
-        "application/json": {
+  "/": {
+    get: {
+      tags: ["Users"],
+      summary: "Get all users",
+      description: "Retrieve a list of users with optional sorting capabilities",
+      parameters: [
+        {
+          name: "sort",
+          in: "query",
+          description: "Sort order. +field for ascending, -field for descending (e.g. +name, -age)",
+          required: false,
           schema: {
-            type: "object",
-            properties: {
-              status: { type: "string" },
-              count: { type: "integer" },
-              data: {
-                type: "array",
-                items: userSchema,
+            type: "string",
+          },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Successful response with users list",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  count: { type: "integer" },
+                  data: {
+                    type: "array",
+                    items: userSchema,
+                  },
+                  timestamp: { type: "string", format: "date-time" },
+                },
               },
-              timestamp: { type: "string", format: "date-time" },
             },
           },
         },
@@ -52,6 +56,19 @@ const usersPathSpec = {
     },
   },
 };
+
+// Create OpenAPI middleware
+const api = openapi({
+  openapi: "3.0.0",
+  info: {
+    title: "Users API",
+    version: "1.0.0",
+  },
+  paths: usersPathSpec,
+});
+
+// Apply OpenAPI middleware to the router
+router.use(api);
 
 // Mock users data
 const users = [

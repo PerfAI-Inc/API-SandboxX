@@ -4,20 +4,194 @@ const openapi = require("@wesleytodd/openapi");
 
 // Define OpenAPI specifications for this router
 const patientPathSpec = {
-  tags: ["Patient"],
-  summary: "Patient medical records",
-  description: "API endpoints for managing patient medical records",
-  responses: {
-    200: {
-      description: "Successful response",
-      content: {
-        "application/json": {
+  "/patient/history/record": {
+    get: {
+      tags: ["Patient"],
+      summary: "Get patient record",
+      description: "Retrieve patient medical record",
+      operationId: "getPatientRecord",
+      responses: {
+        200: {
+          description: "Successful response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  id: { type: "string" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/patient/history/record/modify": {
+    post: {
+      tags: ["Patient"],
+      summary: "Create patient record",
+      description: "Create a new patient medical record",
+      operationId: "createPatientRecord",
+      requestBody: {
+        description: "Patient record data",
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Record created successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  id: { type: "string" },
+                  data: { type: "object" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/patient/history/record/modify/{id}": {
+    delete: {
+      tags: ["Patient"],
+      summary: "Delete patient record",
+      description: "Delete an existing patient medical record",
+      operationId: "deletePatientRecord",
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "ID of the patient record to delete",
           schema: {
-            type: "object",
-            properties: {
-              status: { type: "string" },
-              id: { type: "string" },
-              timestamp: { type: "string", format: "date-time" },
+            type: "string",
+          },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Record deleted successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  deleted: { type: "string" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/patient/history/record/update/{id}": {
+    put: {
+      tags: ["Patient"],
+      summary: "Update patient record",
+      description: "Update an existing patient medical record",
+      operationId: "updatePatientRecord",
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "ID of the patient record to update",
+          schema: {
+            type: "string",
+          },
+        },
+      ],
+      requestBody: {
+        description: "Updated patient record data",
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Record updated successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  id: { type: "string" },
+                  updated: { type: "object" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/patient/history/record/update/modify/{id}": {
+    patch: {
+      tags: ["Patient"],
+      summary: "Partially update patient record",
+      description: "Update parts of an existing patient medical record",
+      operationId: "patchPatientRecord",
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          description: "ID of the patient record to patch",
+          schema: {
+            type: "string",
+          },
+        },
+      ],
+      requestBody: {
+        description: "Partial patient record data",
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Record patched successfully",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "string" },
+                  id: { type: "string" },
+                  patched: { type: "object" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
             },
           },
         },

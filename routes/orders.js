@@ -16,48 +16,52 @@ const orderSchema = {
 
 // Define the OpenAPI path specifications for this router
 const ordersPathSpec = {
-  tags: ["Orders"],
-  summary: "Order management endpoints",
-  description: "API endpoints for order operations",
-  parameters: [
-    {
-      name: "sortField",
-      in: "query",
-      description: "Field to sort by (ignored in current implementation)",
-      required: false,
-      schema: { type: "string" },
-    },
-    {
-      name: "sortOrder",
-      in: "query",
-      description: "Sort order - asc or desc (ignored in current implementation)",
-      required: false,
-      schema: {
-        type: "string",
-        enum: ["asc", "desc"],
-      },
-    },
-  ],
-  responses: {
-    200: {
-      description: "Successful response with orders list",
-      content: {
-        "application/json": {
+  "/": {
+    get: {
+      tags: ["Orders"],
+      summary: "Order management endpoints",
+      description: "API endpoints for order operations",
+      parameters: [
+        {
+          name: "sortField",
+          in: "query",
+          description: "Field to sort by (ignored in current implementation)",
+          required: false,
+          schema: { type: "string" },
+        },
+        {
+          name: "sortOrder",
+          in: "query",
+          description: "Sort order - asc or desc (ignored in current implementation)",
+          required: false,
           schema: {
-            type: "object",
-            properties: {
-              status: { type: "string" },
-              count: { type: "integer" },
-              data: {
-                type: "array",
-                items: orderSchema,
-              },
-              timestamp: { type: "string", format: "date-time" },
-              requestedSort: {
+            type: "string",
+            enum: ["asc", "desc"],
+          },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Successful response with orders list",
+          content: {
+            "application/json": {
+              schema: {
                 type: "object",
                 properties: {
-                  sortField: { type: "string" },
-                  sortOrder: { type: "string" },
+                  status: { type: "string" },
+                  count: { type: "integer" },
+                  data: {
+                    type: "array",
+                    items: orderSchema,
+                  },
+                  timestamp: { type: "string", format: "date-time" },
+                  requestedSort: {
+                    type: "object",
+                    properties: {
+                      sortField: { type: "string" },
+                      sortOrder: { type: "string" },
+                    },
+                  },
                 },
               },
             },

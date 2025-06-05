@@ -4,19 +4,206 @@ const openapi = require("@wesleytodd/openapi");
 
 // Define OpenAPI specifications for this router
 const basicTestPathSpec = {
-  tags: ["Basic Tests"],
-  summary: "Basic test endpoints",
-  description: "Basic API endpoints for performance testing",
-  responses: {
-    200: {
-      description: "Successful response",
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              timestamp: { type: "string", format: "date-time" },
+  "/simple": {
+    get: {
+      tags: ["Basic Tests"],
+      summary: "Simple OK response",
+      description: "Returns a simple 200 OK response",
+      operationId: "getSimple",
+      responses: {
+        200: {
+          description: "Successful response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/delay/{ms}": {
+    get: {
+      tags: ["Basic Tests"],
+      summary: "Delayed response",
+      description: "Simulates a slow response by delaying for specified milliseconds",
+      operationId: "getDelay",
+      parameters: [
+        {
+          name: "ms",
+          in: "path",
+          description: "Delay in milliseconds",
+          required: true,
+          schema: { type: "integer", default: 1000 },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Delayed response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  timestamp: { type: "string", format: "date-time" },
+                  delay: { type: "integer" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/echo": {
+    post: {
+      tags: ["Basic Tests"],
+      summary: "Echo request body",
+      description: "Returns the request body as part of the response",
+      operationId: "postEcho",
+      requestBody: {
+        description: "Data to be echoed back",
+        required: true,
+        content: {
+          "application/json": {
+            schema: { type: "object" },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Echo response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  data: { type: "object" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/largepayload/{size}": {
+    get: {
+      tags: ["Basic Tests"],
+      summary: "Large payload response",
+      description: "Returns a response with a large data payload",
+      operationId: "getLargePayload",
+      parameters: [
+        {
+          name: "size",
+          in: "path",
+          description: "Number of items to generate",
+          required: true,
+          schema: { type: "integer", default: 1000 },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Large payload response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  count: { type: "integer" },
+                  data: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "integer" },
+                        value: { type: "string" },
+                        number: { type: "integer" },
+                      },
+                    },
+                  },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/cpu/{load}": {
+    get: {
+      tags: ["Basic Tests"],
+      summary: "CPU-intensive operation",
+      description: "Simulates a CPU-intensive operation",
+      operationId: "getCpuLoad",
+      parameters: [
+        {
+          name: "load",
+          in: "path",
+          description: "CPU load factor",
+          required: true,
+          schema: { type: "integer", default: 100 },
+        },
+      ],
+      responses: {
+        200: {
+          description: "CPU operation response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  executionTime: { type: "integer" },
+                  load: { type: "integer" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/status/{code}": {
+    get: {
+      tags: ["Basic Tests"],
+      summary: "Custom status code",
+      description: "Returns a response with the specified status code",
+      operationId: "getStatus",
+      parameters: [
+        {
+          name: "code",
+          in: "path",
+          description: "HTTP status code",
+          required: true,
+          schema: { type: "integer", default: 200 },
+        },
+      ],
+      responses: {
+        default: {
+          description: "Response with custom status code",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  message: { type: "string" },
+                  status: { type: "integer" },
+                  timestamp: { type: "string", format: "date-time" },
+                },
+              },
             },
           },
         },
