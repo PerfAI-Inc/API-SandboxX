@@ -30,6 +30,15 @@ const oapi = openapi({
           timestamp: { type: "string", format: "date-time" },
         },
       },
+      StandardResponse: {
+        type: "object",
+        properties: {
+          id: { type: "string", format: "uuid" },
+          status: { type: "string" },
+          data: { type: "object" },
+          timestamp: { type: "string", format: "date-time" },
+        },
+      },
     },
     responses: {
       NotFound: {
@@ -38,6 +47,16 @@ const oapi = openapi({
           "application/json": {
             schema: {
               $ref: "#/components/schemas/Error",
+            },
+          },
+        },
+      },
+      Success: {
+        description: "Operation completed successfully",
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/StandardResponse",
             },
           },
         },
