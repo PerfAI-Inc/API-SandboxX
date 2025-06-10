@@ -61,7 +61,8 @@ const remediationPathSpec = {
 
 const remediationByIdPathSpec = {
   parameters: [
-    {      name: "id",
+    {
+      name: "id",
       in: "path",
       required: true,
       schema: {
@@ -70,7 +71,8 @@ const remediationByIdPathSpec = {
       },
       description: "The remediation entry identifier",
     },
-  ],  get: {
+  ],
+  get: {
     tags: ["Code Remediation"],
     summary: "Get remediation by ID",
     description: "Retrieve a specific code remediation entry by ID",
@@ -91,7 +93,8 @@ const remediationByIdPathSpec = {
         },
       },
     },
-  },  put: {
+  },
+  put: {
     tags: ["Code Remediation"],
     summary: "Update remediation with PUT",
     description: "Replace an entire code remediation entry",
@@ -123,7 +126,8 @@ const remediationByIdPathSpec = {
         },
       },
     },
-  },  patch: {
+  },
+  patch: {
     tags: ["Code Remediation"],
     summary: "Update remediation with PATCH",
     description: "Partially update a code remediation entry",
@@ -155,7 +159,8 @@ const remediationByIdPathSpec = {
         },
       },
     },
-  },  delete: {
+  },
+  delete: {
     tags: ["Code Remediation"],
     summary: "Delete remediation entry",
     description: "Delete a specific code remediation entry by ID",
@@ -193,7 +198,7 @@ router.get("/:id", (req, res) => {
   // In a real app, you would validate that req.params.id is a valid UUID
   // and fetch the corresponding record from the database
   const validUuid = uuidv4();
-  
+
   res.status(200).json({
     message: "Retrieved item by ID",
     id: validUuid, // Always return a valid UUID format
@@ -214,7 +219,7 @@ router.post("/", (req, res) => {
 router.put("/:id", (req, res) => {
   // For demonstration, using a valid UUID format
   const validUuid = uuidv4();
-  
+
   res.status(200).json({
     message: "Updated successfully with PUT",
     id: validUuid, // Always return a valid UUID format
@@ -227,7 +232,7 @@ router.put("/:id", (req, res) => {
 router.patch("/:id", (req, res) => {
   // For demonstration, using a valid UUID format
   const validUuid = uuidv4();
-  
+
   res.status(200).json({
     message: "Updated successfully with PATCH",
     id: validUuid, // Always return a valid UUID format
@@ -240,7 +245,7 @@ router.patch("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   // For demonstration, using a valid UUID format
   const validUuid = uuidv4();
-  
+
   res.status(200).json({
     message: "Deleted successfully",
     id: validUuid, // Always return a valid UUID format
