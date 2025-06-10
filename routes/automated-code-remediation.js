@@ -1,12 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-// Helper function to validate UUID format
-function isValidUUID(uuid) {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(uuid);
-}
-
 // Define the OpenAPI path specifications for this router
 const remediationPathSpec = {
   get: {
@@ -72,7 +66,6 @@ const remediationByIdPathSpec = {
       required: true,
       schema: {
         type: "string",
-        format: "uuid",
       },
       description: "The remediation entry identifier",
     },
@@ -90,7 +83,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 timestamp: { type: "string", format: "date-time" },
               },
             },
@@ -122,7 +115,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 data: { type: "object" },
                 timestamp: { type: "string", format: "date-time" },
               },
@@ -155,7 +148,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 data: { type: "object" },
                 timestamp: { type: "string", format: "date-time" },
               },
@@ -178,7 +171,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 timestamp: { type: "string", format: "date-time" },
               },
             },
@@ -199,14 +192,6 @@ router.get("/", (req, res) => {
 
 // Simple GET endpoint with ID parameter
 router.get("/:id", (req, res) => {
-  // Validate that the ID is a valid UUID format
-  if (!isValidUUID(req.params.id)) {
-    return res.status(400).json({
-      message: "Invalid ID format. ID must be a valid UUID.",
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   res.status(200).json({
     message: "Retrieved item by ID",
     id: req.params.id,
@@ -225,14 +210,6 @@ router.post("/", (req, res) => {
 
 // Simple PUT endpoint
 router.put("/:id", (req, res) => {
-  // Validate that the ID is a valid UUID format
-  if (!isValidUUID(req.params.id)) {
-    return res.status(400).json({
-      message: "Invalid ID format. ID must be a valid UUID.",
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   res.status(200).json({
     message: "Updated successfully with PUT",
     id: req.params.id,
@@ -243,14 +220,6 @@ router.put("/:id", (req, res) => {
 
 // Simple PATCH endpoint
 router.patch("/:id", (req, res) => {
-  // Validate that the ID is a valid UUID format
-  if (!isValidUUID(req.params.id)) {
-    return res.status(400).json({
-      message: "Invalid ID format. ID must be a valid UUID.",
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   res.status(200).json({
     message: "Updated successfully with PATCH",
     id: req.params.id,
@@ -261,14 +230,6 @@ router.patch("/:id", (req, res) => {
 
 // Simple DELETE endpoint
 router.delete("/:id", (req, res) => {
-  // Validate that the ID is a valid UUID format
-  if (!isValidUUID(req.params.id)) {
-    return res.status(400).json({
-      message: "Invalid ID format. ID must be a valid UUID.",
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   res.status(200).json({
     message: "Deleted successfully",
     id: req.params.id,
