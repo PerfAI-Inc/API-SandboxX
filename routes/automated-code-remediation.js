@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const { v4: uuidv4 } = require("uuid");
 
 // Define the OpenAPI path specifications for this router
 const remediationPathSpec = {
@@ -67,7 +66,6 @@ const remediationByIdPathSpec = {
       required: true,
       schema: {
         type: "string",
-        format: "uuid",
       },
       description: "The remediation entry identifier",
     },
@@ -85,7 +83,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 timestamp: { type: "string", format: "date-time" },
               },
             },
@@ -117,7 +115,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 data: { type: "object" },
                 timestamp: { type: "string", format: "date-time" },
               },
@@ -150,7 +148,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 data: { type: "object" },
                 timestamp: { type: "string", format: "date-time" },
               },
@@ -173,7 +171,7 @@ const remediationByIdPathSpec = {
               type: "object",
               properties: {
                 message: { type: "string" },
-                id: { type: "string", format: "uuid" },
+                id: { type: "string" },
                 timestamp: { type: "string", format: "date-time" },
               },
             },
@@ -194,14 +192,9 @@ router.get("/", (req, res) => {
 
 // Simple GET endpoint with ID parameter
 router.get("/:id", (req, res) => {
-  // For demonstration purposes, using a valid UUID regardless of input
-  // In a real app, you would validate that req.params.id is a valid UUID
-  // and fetch the corresponding record from the database
-  const validUuid = uuidv4();
-
   res.status(200).json({
     message: "Retrieved item by ID",
-    id: validUuid, // Always return a valid UUID format
+    id: req.params.id,
     timestamp: new Date().toISOString(),
   });
 });
@@ -217,12 +210,9 @@ router.post("/", (req, res) => {
 
 // Simple PUT endpoint
 router.put("/:id", (req, res) => {
-  // For demonstration, using a valid UUID format
-  const validUuid = uuidv4();
-
   res.status(200).json({
     message: "Updated successfully with PUT",
-    id: validUuid, // Always return a valid UUID format
+    id: req.params.id,
     data: req.body,
     timestamp: new Date().toISOString(),
   });
@@ -230,12 +220,9 @@ router.put("/:id", (req, res) => {
 
 // Simple PATCH endpoint
 router.patch("/:id", (req, res) => {
-  // For demonstration, using a valid UUID format
-  const validUuid = uuidv4();
-
   res.status(200).json({
     message: "Updated successfully with PATCH",
-    id: validUuid, // Always return a valid UUID format
+    id: req.params.id,
     data: req.body,
     timestamp: new Date().toISOString(),
   });
@@ -243,12 +230,9 @@ router.patch("/:id", (req, res) => {
 
 // Simple DELETE endpoint
 router.delete("/:id", (req, res) => {
-  // For demonstration, using a valid UUID format
-  const validUuid = uuidv4();
-
   res.status(200).json({
     message: "Deleted successfully",
-    id: validUuid, // Always return a valid UUID format
+    id: req.params.id,
     timestamp: new Date().toISOString(),
   });
 });
