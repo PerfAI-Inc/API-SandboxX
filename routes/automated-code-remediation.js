@@ -202,6 +202,7 @@ router.get("/:id", (req, res) => {
 // Simple POST endpoint
 router.post("/", (req, res) => {
   res.status(201).json({
+    id: "newly-created-id",
     message: "Created successfully",
     data: req.body,
     timestamp: new Date().toISOString(),
