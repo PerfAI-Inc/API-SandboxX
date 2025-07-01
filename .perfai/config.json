@@ -1,0 +1,38 @@
+{
+  "project": {
+    "name": "Perf-Engine-TestEndpoints",
+    "version": "1.0.0",
+    "description": "Automated security testing configuration"
+  },
+  "testing": {
+    "modes": [
+      "LOCAL"
+    ],
+    "baseUrl": "http://localhost:3000",
+    "endpoints": [
+      "/api/health",
+      "/api/users",
+      "/api/auth/login"
+    ]
+  },
+  "security": {
+    "testTypes": [
+      "authentication",
+      "authorization",
+      "input-validation",
+      "sql-injection",
+      "xss"
+    ],
+    "severity": "medium"
+  },
+  "output": {
+    "format": "json",
+    "reportPath": "./reports",
+    "verbose": true
+  },
+  "perfai": {
+    "apiUrl": "http://host.docker.internal:8080/api/v1",
+    "appId": "123456789",
+    "mode": "LOCAL"
+  }
+}
