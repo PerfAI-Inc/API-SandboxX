@@ -56,7 +56,16 @@
       }
     },
     "/api/remediation/{id}": {
-      "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "Unique identifier for the remediation entry. Must be a valid string that corresponds to an existing remediation record.",
+          "schema": { "type": "string" },
+          "example": "rem_12345abcde"
+        }
+      ],
       "get": {
         "tags": ["Code Remediation"],
         "summary": "Get remediation by ID",
