@@ -6,10 +6,8 @@ const remediationPathSpec = {
   get: {
     tags: ["Code Remediation"],
     summary: "Get all remediation data",
-    description: "Retrieve all code remediation information",
     responses: {
       200: {
-        description: "Successful response",
         content: {
           "application/json": {
             schema: {
@@ -27,7 +25,6 @@ const remediationPathSpec = {
   post: {
     tags: ["Code Remediation"],
     summary: "Create new remediation entry",
-    description: "Create a new code remediation entry",
     requestBody: {
       required: true,
       content: {
@@ -40,7 +37,6 @@ const remediationPathSpec = {
     },
     responses: {
       201: {
-        description: "Resource created successfully",
         content: {
           "application/json": {
             schema: {
@@ -67,16 +63,13 @@ const remediationByIdPathSpec = {
       schema: {
         type: "string",
       },
-      description: "The remediation entry identifier",
     },
   ],
   get: {
     tags: ["Code Remediation"],
     summary: "Get remediation by ID",
-    description: "Retrieve a specific code remediation entry by ID",
     responses: {
       200: {
-        description: "Successful response",
         content: {
           "application/json": {
             schema: {
@@ -95,7 +88,6 @@ const remediationByIdPathSpec = {
   put: {
     tags: ["Code Remediation"],
     summary: "Update remediation with PUT",
-    description: "Replace an entire code remediation entry",
     requestBody: {
       required: true,
       content: {
@@ -108,7 +100,6 @@ const remediationByIdPathSpec = {
     },
     responses: {
       200: {
-        description: "Successfully updated",
         content: {
           "application/json": {
             schema: {
@@ -128,7 +119,6 @@ const remediationByIdPathSpec = {
   patch: {
     tags: ["Code Remediation"],
     summary: "Update remediation with PATCH",
-    description: "Partially update a code remediation entry",
     requestBody: {
       required: true,
       content: {
@@ -141,7 +131,6 @@ const remediationByIdPathSpec = {
     },
     responses: {
       200: {
-        description: "Successfully updated",
         content: {
           "application/json": {
             schema: {
@@ -161,10 +150,8 @@ const remediationByIdPathSpec = {
   delete: {
     tags: ["Code Remediation"],
     summary: "Delete remediation entry",
-    description: "Delete a specific code remediation entry by ID",
     responses: {
       200: {
-        description: "Successfully deleted",
         content: {
           "application/json": {
             schema: {
