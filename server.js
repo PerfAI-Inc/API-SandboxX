@@ -21,6 +21,12 @@ const oapi = openapi({
     version: "2.0.0",
   },
   components: {
+    securitySchemes: {
+      basicAuth: {
+        type: "http",
+        scheme: "basic",
+      },
+    },
     schemas: {
       Error: {
         type: "object",

@@ -28,6 +28,7 @@ const remediationPathSpec = {
   post: {
     tags: ["Code Remediation"],
     summary: "Create new remediation entry",
+    security: [{ basicAuth: [] }],
     requestBody: {
       required: true,
       content: {
@@ -49,6 +50,16 @@ const remediationPathSpec = {
                 data: { type: "object" },
                 timestamp: { type: "string", format: "date-time" },
               },
+            },
+          },
+        },
+      },
+      401: {
+        description: "Authentication required",
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/Error",
             },
           },
         },
@@ -190,7 +201,7 @@ router.get("/:id", (req, res) => {
 });
 
 // Simple POST endpoint
-router.post("/", (req, res) => {
+router.post("/", basicAuth, (req, res) => {
   res.status(201).json({
     id: "newly-created-id",
     message: "Created successfully",
