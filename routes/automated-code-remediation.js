@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+// Import authentication middleware
+const { basicAuth } = require("../middleware/auth");
+
 // Define the OpenAPI path specifications for this router
 const remediationPathSpec = {
   get: {
@@ -217,7 +220,7 @@ router.patch("/:id", (req, res) => {
 });
 
 // Simple DELETE endpoint
-router.delete("/:id", (req, res) => {
+router.delete("/:id", basicAuth, (req, res) => {
   res.status(200).json({
     message: "Deleted successfully",
     id: req.params.id,
