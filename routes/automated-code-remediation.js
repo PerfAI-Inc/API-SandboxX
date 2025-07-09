@@ -9,6 +9,7 @@ const remediationPathSpec = {
   get: {
     tags: ["Code Remediation"],
     summary: "Get all remediation data",
+    security: [{ basicAuth: [] }],
     responses: {
       200: {
         content: {
@@ -19,6 +20,16 @@ const remediationPathSpec = {
                 message: { type: "string" },
                 timestamp: { type: "string", format: "date-time" },
               },
+            },
+          },
+        },
+      },
+      401: {
+        description: "Authentication required",
+        content: {
+          "application/json": {
+            schema: {
+              $ref: "#/components/schemas/Error",
             },
           },
         },
@@ -184,7 +195,7 @@ const remediationByIdPathSpec = {
 };
 
 // Simple GET endpoint
-router.get("/", (req, res) => {
+router.get("/", basicAuth, (req, res) => {
   res.status(200).json({
     message: "Retrieved successfully",
     timestamp: new Date().toISOString(),
