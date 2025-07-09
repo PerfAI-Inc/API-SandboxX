@@ -194,58 +194,84 @@ const medstoreByIdPathSpec = {
   },
 };
 
+
+// In-memory store for medstore resources
+const medstoreDB = {};
+
 // GET all
-router.get("/", basicAuth, (req, res) => {
+router.get("/", (req, res) => {
   res.status(200).json({
     message: "Medstore: Retrieved successfully",
+    data: medstoreDB,
     timestamp: new Date().toISOString(),
   });
 });
 
 // GET by ID
 router.get("/:id", (req, res) => {
-  res.status(200).json({
-    message: "Medstore: Retrieved item by ID",
-    id: req.params.id,
-    timestamp: new Date().toISOString(),
-  });
+  const id = req.params.id;
+  if (medstoreDB[id]) {
+    res.status(200).json({
+      message: "Medstore: Retrieved item by ID",
+      id,
+      data: medstoreDB[id],
+      timestamp: new Date().toISOString(),
+    });
+  } else {
+    res.status(404).json({
+      message: "Medstore: Item not found",
+      id,
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
-// POST
-router.post("/", basicAuth, (req, res) => {
+// POST (create new resource)
+router.post("/", (req, res) => {
+  // Generate a simple numeric ID
+  const newId = (Object.keys(medstoreDB).length + 1).toString();
+  medstoreDB[newId] = req.body;
   res.status(201).json({
-    id: "newly-created-id",
+    id: newId,
     message: "Medstore: Created successfully",
     data: req.body,
     timestamp: new Date().toISOString(),
   });
 });
 
-// PUT
+// PUT (replace resource)
 router.put("/:id", (req, res) => {
+  const id = req.params.id;
+  medstoreDB[id] = req.body;
   res.status(200).json({
     message: "Medstore: Updated successfully with PUT",
-    id: req.params.id,
+    id,
     data: req.body,
     timestamp: new Date().toISOString(),
   });
 });
 
-// PATCH
+// PATCH (update resource)
 router.patch("/:id", (req, res) => {
+  const id = req.params.id;
+  if (!medstoreDB[id]) medstoreDB[id] = {};
+  Object.assign(medstoreDB[id], req.body);
   res.status(200).json({
     message: "Medstore: Updated successfully with PATCH",
-    id: req.params.id,
-    data: req.body,
+    id,
+    data: medstoreDB[id],
     timestamp: new Date().toISOString(),
   });
 });
 
 // DELETE
-router.delete("/:id", basicAuth, (req, res) => {
+router.delete("/:id", (req, res) => {
+  const id = req.params.id;
+  const existed = !!medstoreDB[id];
+  delete medstoreDB[id];
   res.status(200).json({
-    message: "Medstore: Deleted successfully",
-    id: req.params.id,
+    message: existed ? "Medstore: Deleted successfully" : "Medstore: Item not found",
+    id,
     timestamp: new Date().toISOString(),
   });
 });
