@@ -46,6 +46,25 @@ const medstorePathSpec = {
         "application/json": {
           schema: {
             type: "object",
+            required: ["name", "category"], // Added documented required fields
+            properties: {
+              name: { 
+                type: "string",
+                description: "Medicine name"
+              },
+              category: { 
+                type: "string",
+                description: "Medicine category"
+              },
+              price: { 
+                type: "number",
+                description: "Medicine price (optional)"
+              },
+              description: { 
+                type: "string",
+                description: "Medicine description (optional)"
+              }
+            },
           },
         },
       },
@@ -59,6 +78,25 @@ const medstorePathSpec = {
               properties: {
                 message: { type: "string" },
                 data: { type: "object" },
+                timestamp: { type: "string", format: "date-time" },
+              },
+            },
+          },
+        },
+      },
+      400: {
+        description: "Bad request - missing required fields or undocumented fields",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                error: { type: "string" },
+                message: { type: "string" },
+                undocumentedFields: { 
+                  type: "array",
+                  items: { type: "string" }
+                },
                 timestamp: { type: "string", format: "date-time" },
               },
             },
@@ -119,6 +157,25 @@ const medstoreByIdPathSpec = {
         "application/json": {
           schema: {
             type: "object",
+            required: ["name", "category"], // Added documented required fields for PUT
+            properties: {
+              name: { 
+                type: "string",
+                description: "Medicine name"
+              },
+              category: { 
+                type: "string",
+                description: "Medicine category"
+              },
+              price: { 
+                type: "number",
+                description: "Medicine price (optional)"
+              },
+              description: { 
+                type: "string",
+                description: "Medicine description (optional)"
+              }
+            },
           },
         },
       },
@@ -139,6 +196,25 @@ const medstoreByIdPathSpec = {
           },
         },
       },
+      400: {
+        description: "Bad request - missing required fields or undocumented fields",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                error: { type: "string" },
+                message: { type: "string" },
+                undocumentedFields: { 
+                  type: "array",
+                  items: { type: "string" }
+                },
+                timestamp: { type: "string", format: "date-time" },
+              },
+            },
+          },
+        },
+      },
     },
   },
   patch: {
@@ -150,6 +226,24 @@ const medstoreByIdPathSpec = {
         "application/json": {
           schema: {
             type: "object",
+            properties: {
+              name: { 
+                type: "string",
+                description: "Medicine name"
+              },
+              category: { 
+                type: "string",
+                description: "Medicine category"
+              },
+              price: { 
+                type: "number",
+                description: "Medicine price (optional)"
+              },
+              description: { 
+                type: "string",
+                description: "Medicine description (optional)"
+              }
+            },
           },
         },
       },
@@ -164,6 +258,25 @@ const medstoreByIdPathSpec = {
                 message: { type: "string" },
                 id: { type: "string" },
                 data: { type: "object" },
+                timestamp: { type: "string", format: "date-time" },
+              },
+            },
+          },
+        },
+      },
+      400: {
+        description: "Bad request - undocumented fields present",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                error: { type: "string" },
+                message: { type: "string" },
+                undocumentedFields: { 
+                  type: "array",
+                  items: { type: "string" }
+                },
                 timestamp: { type: "string", format: "date-time" },
               },
             },
@@ -194,9 +307,35 @@ const medstoreByIdPathSpec = {
   },
 };
 
-
 // In-memory store for medstore resources
 const medstoreDB = {};
+
+// Helper function to validate documented fields
+function validateDocumentedFields(requestBody, allowedFields) {
+  const undocumentedFields = [];
+  const bodyFields = Object.keys(requestBody);
+  
+  bodyFields.forEach(field => {
+    if (!allowedFields.includes(field)) {
+      undocumentedFields.push(field);
+    }
+  });
+  
+  return undocumentedFields;
+}
+
+// Helper function to validate required fields
+function validateRequiredFields(requestBody, requiredFields) {
+  const missingFields = [];
+  
+  requiredFields.forEach(field => {
+    if (!requestBody.hasOwnProperty(field) || requestBody[field] === null || requestBody[field] === undefined || requestBody[field] === '') {
+      missingFields.push(field);
+    }
+  });
+  
+  return missingFields;
+}
 
 // GET all
 router.get("/", (req, res) => {
@@ -226,8 +365,33 @@ router.get("/:id", (req, res) => {
   }
 });
 
-// POST (create new resource)
+// POST (create new resource) - Enhanced with validation
 router.post("/", (req, res) => {
+  const allowedFields = ['name', 'category', 'price', 'description'];
+  const requiredFields = ['name', 'category'];
+  
+  // Check for undocumented fields
+  const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
+  if (undocumentedFields.length > 0) {
+    return res.status(400).json({
+      error: "Undocumented fields detected",
+      message: `The following fields are not documented in the API specification: ${undocumentedFields.join(', ')}`,
+      undocumentedFields,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  
+  // Check for missing required fields
+  const missingFields = validateRequiredFields(req.body, requiredFields);
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      error: "Missing required fields",
+      message: `The following required fields are missing: ${missingFields.join(', ')}`,
+      missingFields,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  
   // Generate a simple numeric ID
   const newId = (Object.keys(medstoreDB).length + 1).toString();
   medstoreDB[newId] = req.body;
@@ -239,9 +403,34 @@ router.post("/", (req, res) => {
   });
 });
 
-// PUT (replace resource)
+// PUT (replace resource) - Enhanced with validation
 router.put("/:id", (req, res) => {
   const id = req.params.id;
+  const allowedFields = ['name', 'category', 'price', 'description'];
+  const requiredFields = ['name', 'category'];
+  
+  // Check for undocumented fields
+  const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
+  if (undocumentedFields.length > 0) {
+    return res.status(400).json({
+      error: "Undocumented fields detected",
+      message: `The following fields are not documented in the API specification: ${undocumentedFields.join(', ')}`,
+      undocumentedFields,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  
+  // Check for missing required fields
+  const missingFields = validateRequiredFields(req.body, requiredFields);
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      error: "Missing required fields",
+      message: `The following required fields are missing: ${missingFields.join(', ')}`,
+      missingFields,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  
   medstoreDB[id] = req.body;
   res.status(200).json({
     message: "Medstore: Updated successfully with PUT",
@@ -251,9 +440,22 @@ router.put("/:id", (req, res) => {
   });
 });
 
-// PATCH (update resource)
+// PATCH (update resource) - Enhanced with validation
 router.patch("/:id", (req, res) => {
   const id = req.params.id;
+  const allowedFields = ['name', 'category', 'price', 'description'];
+  
+  // Check for undocumented fields
+  const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
+  if (undocumentedFields.length > 0) {
+    return res.status(400).json({
+      error: "Undocumented fields detected",
+      message: `The following fields are not documented in the API specification: ${undocumentedFields.join(', ')}`,
+      undocumentedFields,
+      timestamp: new Date().toISOString(),
+    });
+  }
+  
   if (!medstoreDB[id]) medstoreDB[id] = {};
   Object.assign(medstoreDB[id], req.body);
   res.status(200).json({
