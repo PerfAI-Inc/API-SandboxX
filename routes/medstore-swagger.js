@@ -46,7 +46,7 @@ const medstorePathSpec = {
         "application/json": {
           schema: {
             type: "object",
-            required: ["name", "category"], // Added documented required fields
+            required: ["name", "category"], // Only documented required fields
             properties: {
               name: { 
                 type: "string",
@@ -63,7 +63,9 @@ const medstorePathSpec = {
               description: { 
                 type: "string",
                 description: "Medicine description (optional)"
-              }
+              },
+              // Note: 'supplier' is NOT documented but is required by backend
+              // Note: 'batchNumber' is NOT documented but is required by backend
             },
           },
         },
@@ -157,7 +159,7 @@ const medstoreByIdPathSpec = {
         "application/json": {
           schema: {
             type: "object",
-            required: ["name", "category"], // Added documented required fields for PUT
+            required: ["name", "category"], // Only documented required fields
             properties: {
               name: { 
                 type: "string",
@@ -174,7 +176,8 @@ const medstoreByIdPathSpec = {
               description: { 
                 type: "string",
                 description: "Medicine description (optional)"
-              }
+              },
+              // Note: 'supplier' is NOT documented but is required by backend
             },
           },
         },
@@ -324,7 +327,7 @@ function validateDocumentedFields(requestBody, allowedFields) {
   return undocumentedFields;
 }
 
-// Helper function to validate required fields
+// Helper function to validate required fields (both documented and undocumented)
 function validateRequiredFields(requestBody, requiredFields) {
   const missingFields = [];
   
@@ -365,12 +368,15 @@ router.get("/:id", (req, res) => {
   }
 });
 
-// POST (create new resource) - Enhanced with validation
+// POST (create new resource) - Enhanced with undocumented required fields
 router.post("/", (req, res) => {
-  const allowedFields = ['name', 'category', 'price', 'description'];
-  const requiredFields = ['name', 'category'];
+  const allowedFields = ['name', 'category', 'price', 'description', 'supplier', 'batchNumber'];
+  const documentedRequiredFields = ['name', 'category'];
+  // Backend actually requires these additional fields but they're not documented
+  const undocumentedRequiredFields = ['supplier', 'batchNumber'];
+  const allRequiredFields = [...documentedRequiredFields, ...undocumentedRequiredFields];
   
-  // Check for undocumented fields
+  // Check for undocumented fields (fields not in allowedFields)
   const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
   if (undocumentedFields.length > 0) {
     return res.status(400).json({
@@ -381,8 +387,8 @@ router.post("/", (req, res) => {
     });
   }
   
-  // Check for missing required fields
-  const missingFields = validateRequiredFields(req.body, requiredFields);
+  // Check for missing required fields (including undocumented ones)
+  const missingFields = validateRequiredFields(req.body, allRequiredFields);
   if (missingFields.length > 0) {
     return res.status(400).json({
       error: "Missing required fields",
@@ -403,13 +409,16 @@ router.post("/", (req, res) => {
   });
 });
 
-// PUT (replace resource) - Enhanced with validation
+// PUT (replace resource) - Enhanced with undocumented required fields
 router.put("/:id", (req, res) => {
   const id = req.params.id;
-  const allowedFields = ['name', 'category', 'price', 'description'];
-  const requiredFields = ['name', 'category'];
+  const allowedFields = ['name', 'category', 'price', 'description', 'supplier'];
+  const documentedRequiredFields = ['name', 'category'];
+  // Backend actually requires supplier but it's not documented
+  const undocumentedRequiredFields = ['supplier'];
+  const allRequiredFields = [...documentedRequiredFields, ...undocumentedRequiredFields];
   
-  // Check for undocumented fields
+  // Check for undocumented fields (fields not in allowedFields)
   const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
   if (undocumentedFields.length > 0) {
     return res.status(400).json({
@@ -420,8 +429,8 @@ router.put("/:id", (req, res) => {
     });
   }
   
-  // Check for missing required fields
-  const missingFields = validateRequiredFields(req.body, requiredFields);
+  // Check for missing required fields (including undocumented ones)
+  const missingFields = validateRequiredFields(req.body, allRequiredFields);
   if (missingFields.length > 0) {
     return res.status(400).json({
       error: "Missing required fields",
