@@ -85,6 +85,8 @@ const remediationByIdPathSpec = {
       name: "id",
       in: "path",
       required: true,
+      description: "Unique identifier for the remediation entry. Should be a valid UUID or database record ID.",
+      example: "123e4567-e89b-12d3-a456-426614174000",
       schema: {
         type: "string",
       },
