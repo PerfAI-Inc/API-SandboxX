@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 // OpenAPI path specification for /auth/token
 const apiSpec = {
-  "/token": {
+  "/api/auth/token": {
     post: {
       tags: ["Auth"],
       summary: "Generate a test JWT token with username and password",
