@@ -5,6 +5,7 @@ const openapi = require("@wesleytodd/openapi");
 // Import routers for endpoints
 const remediationRouter = require("./routes/automated-code-remediation");
 const medstoreRouter = require("./routes/medstore-swagger");
+const authRouter = require("./routes/auth");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,22 +52,25 @@ const oapi = openapi({
       },
     },
   },
-  // Explicitly define paths for the remediation and medstore routers
-  paths: { 
+  // Explicitly define paths for the remediation, medstore, and test-token routers
+  paths: {
     ...remediationRouter.apiSpec,
     ...medstoreRouter.apiSpec,
+    ...authRouter.apiSpec,
   },
 });
 
 // Use the OpenAPI middleware
 app.use(oapi);
 
-
 // Mount the remediation router
 app.use("/api/remediation", oapi.path(remediationRouter.apiSpec), remediationRouter);
 
 // Mount the medstore router
 app.use("/api/medstore", oapi.path(medstoreRouter.apiSpec), medstoreRouter);
+
+// Mount the test token router
+app.use("/api/auth", oapi.path(authRouter.apiSpec), authRouter);
 
 // Create a reusable error handler
 const errorHandler = (req, res, next) => {
