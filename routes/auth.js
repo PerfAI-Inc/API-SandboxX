@@ -72,4 +72,5 @@ router.post("/token", (req, res) => {
   res.json({ token });
 });
 
-module.exports = { router, apiSpec };
+module.exports = router;
+module.exports.apiSpec = apiSpec;
