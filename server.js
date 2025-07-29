@@ -6,6 +6,7 @@ const openapi = require("@wesleytodd/openapi");
 const remediationRouter = require("./routes/automated-code-remediation");
 const medstoreRouter = require("./routes/medstore-swagger");
 const authRouter = require("./routes/auth");
+const maliciousFileTestRouter = require("./routes/malicious-file-test");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -66,6 +67,7 @@ const oapi = openapi({
     ...remediationRouter.apiSpec,
     ...medstoreRouter.apiSpec,
     ...authRouter.apiSpec,
+    ...maliciousFileTestRouter.apiSpec,
   },
 });
 
@@ -80,6 +82,9 @@ app.use("/api/medstore", oapi.path(medstoreRouter.apiSpec), medstoreRouter);
 
 // Mount the test token router
 app.use("/api/auth", oapi.path(authRouter.apiSpec), authRouter);
+
+// Mount the malicious file test router
+app.use("/api/file", oapi.path(maliciousFileTestRouter.apiSpec), maliciousFileTestRouter);
 
 // Create a reusable error handler
 const errorHandler = (req, res, next) => {
