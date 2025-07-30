@@ -6,19 +6,28 @@ const { basicAuth } = require("../middleware/auth");
 
 // OpenAPI path specifications for Foodstore endpoints (mirroring automated-code-remediation.js)
 const foodstorePathSpec = {
+  // MODIFICATION START: Updated GET endpoint specification
   get: {
     tags: ["Foodstore"],
     summary: "Get all foodstore data",
     security: [{ basicAuth: [] }],
     responses: {
       200: {
+        description: "A list of food items without pagination",
         content: {
           "application/json": {
             schema: {
-              type: "object",
-              properties: {
-                message: { type: "string" },
-                timestamp: { type: "string", format: "date-time" },
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  category: { type: "string" },
+                  price: { type: "number" },
+                  description: { type: "string" },
+                  brand: { type: "string" },
+                  lotNumber: { type: "string" },
+                },
               },
             },
           },
@@ -36,6 +45,7 @@ const foodstorePathSpec = {
       },
     },
   },
+  // MODIFICATION END
   post: {
     tags: ["Foodstore"],
     summary: "Create new foodstore entry",
@@ -48,19 +58,19 @@ const foodstorePathSpec = {
             type: "object",
             required: ["name", "category"], // Only documented required fields
             properties: {
-              name: { 
+              name: {
                 type: "string",
                 description: "Food item name"
               },
-              category: { 
+              category: {
                 type: "string",
                 description: "Food category"
               },
-              price: { 
+              price: {
                 type: "number",
                 description: "Food price (optional)"
               },
-              description: { 
+              description: {
                 type: "string",
                 description: "Food description (optional)"
               },
@@ -95,7 +105,7 @@ const foodstorePathSpec = {
               properties: {
                 error: { type: "string" },
                 message: { type: "string" },
-                undocumentedFields: { 
+                undocumentedFields: {
                   type: "array",
                   items: { type: "string" }
                 },
@@ -161,19 +171,19 @@ const foodstoreByIdPathSpec = {
             type: "object",
             required: ["name", "category"], // Only documented required fields
             properties: {
-              name: { 
+              name: {
                 type: "string",
                 description: "Food item name"
               },
-              category: { 
+              category: {
                 type: "string",
                 description: "Food category"
               },
-              price: { 
+              price: {
                 type: "number",
                 description: "Food price (optional)"
               },
-              description: { 
+              description: {
                 type: "string",
                 description: "Food description (optional)"
               },
@@ -208,7 +218,7 @@ const foodstoreByIdPathSpec = {
               properties: {
                 error: { type: "string" },
                 message: { type: "string" },
-                undocumentedFields: { 
+                undocumentedFields: {
                   type: "array",
                   items: { type: "string" }
                 },
@@ -230,19 +240,19 @@ const foodstoreByIdPathSpec = {
           schema: {
             type: "object",
             properties: {
-              name: { 
+              name: {
                 type: "string",
                 description: "Food item name"
               },
-              category: { 
+              category: {
                 type: "string",
                 description: "Food category"
               },
-              price: { 
+              price: {
                 type: "number",
                 description: "Food price (optional)"
               },
-              description: { 
+              description: {
                 type: "string",
                 description: "Food description (optional)"
               }
@@ -276,7 +286,7 @@ const foodstoreByIdPathSpec = {
               properties: {
                 error: { type: "string" },
                 message: { type: "string" },
-                undocumentedFields: { 
+                undocumentedFields: {
                   type: "array",
                   items: { type: "string" }
                 },
@@ -315,14 +325,14 @@ const foodstoreDB = {};
 
 // Test results storage for field discovery
 const fieldDiscoveryResults = {
-  post: { 
+  post: {
     testSequence: [],
     discoveredUndocumentedRequired: [],
     discoveredUndocumentedOptional: [],
     completedAt: null,
     status: 'NOT_STARTED'
   },
-  put: { 
+  put: {
     testSequence: [],
     discoveredUndocumentedRequired: [],
     discoveredUndocumentedOptional: [],
@@ -353,26 +363,26 @@ const fieldDiscoveryConfig = {
 function validateDocumentedFields(requestBody, allowedFields) {
   const undocumentedFields = [];
   const bodyFields = Object.keys(requestBody);
-  
+
   bodyFields.forEach(field => {
     if (!allowedFields.includes(field)) {
       undocumentedFields.push(field);
     }
   });
-  
+
   return undocumentedFields;
 }
 
 // Helper function to validate required fields (both documented and undocumented)
 function validateRequiredFields(requestBody, requiredFields) {
   const missingFields = [];
-  
+
   requiredFields.forEach(field => {
     if (!requestBody.hasOwnProperty(field) || requestBody[field] === null || requestBody[field] === undefined || requestBody[field] === '') {
       missingFields.push(field);
     }
   });
-  
+
   return missingFields;
 }
 
@@ -380,7 +390,7 @@ function validateRequiredFields(requestBody, requiredFields) {
 function simulateBackendValidation(method, requestBody) {
   const config = fieldDiscoveryConfig[method.toLowerCase()];
   const missingRequired = validateRequiredFields(requestBody, config.actualRequired);
-  
+
   if (missingRequired.length > 0) {
     return {
       success: false,
@@ -389,7 +399,7 @@ function simulateBackendValidation(method, requestBody) {
       message: `Missing required fields: ${missingRequired.join(', ')}`
     };
   }
-  
+
   return {
     success: true,
     message: 'Request would succeed'
@@ -401,13 +411,13 @@ function performFieldDiscovery(method, originalRequestBody) {
   const methodKey = method.toLowerCase();
   const config = fieldDiscoveryConfig[methodKey];
   const testResults = fieldDiscoveryResults[methodKey];
-  
+
   // Reset test results
   testResults.testSequence = [];
   testResults.discoveredUndocumentedRequired = [];
   testResults.discoveredUndocumentedOptional = [];
   testResults.status = 'RUNNING';
-  
+
   // Sample values for testing
   const sampleValues = {
     name: 'Test Food',
@@ -421,15 +431,15 @@ function performFieldDiscovery(method, originalRequestBody) {
     storageLocation: 'Warehouse A',
     inventoryCount: 100
   };
-  
+
   // Phase 1: Test with only documented required fields
   console.log(`\n=== Phase 1: Testing ${methodKey.toUpperCase()} with documented required fields only ===`);
-  
+
   let testBody = {};
   config.documentedRequired.forEach(field => {
     testBody[field] = originalRequestBody[field] || sampleValues[field];
   });
-  
+
   let testResult = {
     phase: 1,
     description: 'Documented required fields only',
@@ -437,17 +447,17 @@ function performFieldDiscovery(method, originalRequestBody) {
     backendResult: simulateBackendValidation(method, testBody),
     timestamp: new Date().toISOString()
   };
-  
+
   testResults.testSequence.push(testResult);
   console.log(`Test 1 - Documented required only: ${testResult.backendResult.success ? 'SUCCESS' : 'FAILED'}`);
-  
+
   // Phase 2: Add documented optional fields one by one
   console.log(`\n=== Phase 2: Adding documented optional fields one by one ===`);
-  
+
   config.documentedOptional.forEach((field, index) => {
     if (originalRequestBody[field] || sampleValues[field]) {
       testBody[field] = originalRequestBody[field] || sampleValues[field];
-      
+
       testResult = {
         phase: 2,
         description: `Added documented optional field: ${field}`,
@@ -455,19 +465,19 @@ function performFieldDiscovery(method, originalRequestBody) {
         backendResult: simulateBackendValidation(method, testBody),
         timestamp: new Date().toISOString()
       };
-      
+
       testResults.testSequence.push(testResult);
       console.log(`Test 2.${index + 1} - Added ${field}: ${testResult.backendResult.success ? 'SUCCESS' : 'FAILED'}`);
     }
   });
-  
+
   // Phase 3: Systematically test undocumented fields
   console.log(`\n=== Phase 3: Testing potential undocumented fields ===`);
-  
+
   config.potentialUndocumented.forEach((field, index) => {
     let testBodyWithUndocumented = { ...testBody };
     testBodyWithUndocumented[field] = originalRequestBody[field] || sampleValues[field];
-    
+
     testResult = {
       phase: 3,
       description: `Testing undocumented field: ${field}`,
@@ -475,10 +485,10 @@ function performFieldDiscovery(method, originalRequestBody) {
       backendResult: simulateBackendValidation(method, testBodyWithUndocumented),
       timestamp: new Date().toISOString()
     };
-    
+
     testResults.testSequence.push(testResult);
     console.log(`Test 3.${index + 1} - Testing ${field}: ${testResult.backendResult.success ? 'SUCCESS' : 'FAILED'}`);
-    
+
     // If this field makes the request succeed, it's likely required
     if (testResult.backendResult.success && !testResults.discoveredUndocumentedRequired.includes(field)) {
       testResults.discoveredUndocumentedRequired.push(field);
@@ -486,16 +496,16 @@ function performFieldDiscovery(method, originalRequestBody) {
       console.log(`  → DISCOVERED: ${field} appears to be an undocumented required field`);
     }
   });
-  
+
   // Phase 4: Test combinations to identify minimum required undocumented fields
   console.log(`\n=== Phase 4: Testing minimum required undocumented field combinations ===`);
-  
+
   if (testResults.discoveredUndocumentedRequired.length > 1) {
     // Test removing each discovered field to see if it's truly required
     testResults.discoveredUndocumentedRequired.forEach((field, index) => {
       let testBodyWithoutField = { ...testBody };
       delete testBodyWithoutField[field];
-      
+
       testResult = {
         phase: 4,
         description: `Testing without discovered field: ${field}`,
@@ -503,28 +513,28 @@ function performFieldDiscovery(method, originalRequestBody) {
         backendResult: simulateBackendValidation(method, testBodyWithoutField),
         timestamp: new Date().toISOString()
       };
-      
+
       testResults.testSequence.push(testResult);
       console.log(`Test 4.${index + 1} - Without ${field}: ${testResult.backendResult.success ? 'SUCCESS' : 'FAILED'}`);
-      
+
       // If request fails without this field, it's definitely required
       if (!testResult.backendResult.success) {
         console.log(`  → CONFIRMED: ${field} is definitely required`);
       }
     });
   }
-  
+
   // Phase 5: Test other undocumented fields as optional
   console.log(`\n=== Phase 5: Testing remaining fields as optional ===`);
-  
+
   const remainingFields = config.potentialUndocumented.filter(
     field => !testResults.discoveredUndocumentedRequired.includes(field)
   );
-  
+
   remainingFields.forEach((field, index) => {
     let testBodyWithOptional = { ...testBody };
     testBodyWithOptional[field] = originalRequestBody[field] || sampleValues[field];
-    
+
     testResult = {
       phase: 5,
       description: `Testing potential optional undocumented field: ${field}`,
@@ -532,36 +542,35 @@ function performFieldDiscovery(method, originalRequestBody) {
       backendResult: simulateBackendValidation(method, testBodyWithOptional),
       timestamp: new Date().toISOString()
     };
-    
+
     testResults.testSequence.push(testResult);
     console.log(`Test 5.${index + 1} - Optional ${field}: ${testResult.backendResult.success ? 'SUCCESS' : 'FAILED'}`);
-    
+
     // If it still works, it's an optional undocumented field
     if (testResult.backendResult.success) {
       testResults.discoveredUndocumentedOptional.push(field);
       console.log(`  → DISCOVERED: ${field} appears to be an undocumented optional field`);
     }
   });
-  
+
   testResults.completedAt = new Date().toISOString();
   testResults.status = 'COMPLETED';
-  
+
   console.log(`\n=== Field Discovery Complete for ${methodKey.toUpperCase()} ===`);
   console.log(`Total tests performed: ${testResults.testSequence.length}`);
   console.log(`Discovered undocumented required fields: ${testResults.discoveredUndocumentedRequired.join(', ') || 'None'}`);
   console.log(`Discovered undocumented optional fields: ${testResults.discoveredUndocumentedOptional.join(', ') || 'None'}`);
-  
+
   return testResults;
 }
 
+// MODIFICATION START: Updated GET all handler
 // GET all
 router.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Foodstore: Retrieved successfully",
-    data: foodstoreDB,
-    timestamp: new Date().toISOString(),
-  });
+  // Return a flat array of food items, simulating a non-paginated response.
+  res.status(200).json(Object.values(foodstoreDB));
 });
+// MODIFICATION END
 
 // GET by ID
 router.get("/:id", (req, res) => {
@@ -588,10 +597,10 @@ router.post("/", (req, res) => {
   const documentedRequiredFields = ['name', 'category'];
   const undocumentedRequiredFields = ['brand', 'lotNumber'];
   const allRequiredFields = [...documentedRequiredFields, ...undocumentedRequiredFields];
-  
+
   // Perform comprehensive field discovery testing
   const discoveryResults = performFieldDiscovery('POST', req.body);
-  
+
   // Check for undocumented fields (fields not in allowedFields)
   const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
   if (undocumentedFields.length > 0) {
@@ -614,7 +623,7 @@ router.post("/", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Check for missing required fields (including undocumented ones)
   const missingFields = validateRequiredFields(req.body, allRequiredFields);
   if (missingFields.length > 0) {
@@ -638,7 +647,7 @@ router.post("/", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Generate a simple numeric ID
   const newId = (Object.keys(foodstoreDB).length + 1).toString();
   foodstoreDB[newId] = req.body;
@@ -664,10 +673,10 @@ router.put("/:id", (req, res) => {
   const documentedRequiredFields = ['name', 'category'];
   const undocumentedRequiredFields = ['brand'];
   const allRequiredFields = [...documentedRequiredFields, ...undocumentedRequiredFields];
-  
+
   // Perform comprehensive field discovery testing
   const discoveryResults = performFieldDiscovery('PUT', req.body);
-  
+
   // Check for undocumented fields (fields not in allowedFields)
   const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
   if (undocumentedFields.length > 0) {
@@ -690,7 +699,7 @@ router.put("/:id", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Check for missing required fields (including undocumented ones)
   const missingFields = validateRequiredFields(req.body, allRequiredFields);
   if (missingFields.length > 0) {
@@ -714,7 +723,7 @@ router.put("/:id", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   foodstoreDB[id] = req.body;
   res.status(200).json({
     message: "Foodstore: Updated successfully with PUT",
@@ -735,7 +744,7 @@ router.put("/:id", (req, res) => {
 router.patch("/:id", (req, res) => {
   const id = req.params.id;
   const allowedFields = ['name', 'category', 'price', 'description'];
-  
+
   // Check for undocumented fields
   const undocumentedFields = validateDocumentedFields(req.body, allowedFields);
   if (undocumentedFields.length > 0) {
@@ -746,7 +755,7 @@ router.patch("/:id", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   if (!foodstoreDB[id]) foodstoreDB[id] = {};
   Object.assign(foodstoreDB[id], req.body);
   res.status(200).json({
@@ -800,7 +809,7 @@ router.get("/test/field-discovery", (req, res) => {
 // Enhanced endpoint to get detailed test sequence for a specific method
 router.get("/test/field-discovery/:method", (req, res) => {
   const method = req.params.method.toLowerCase();
-  
+
   if (!fieldDiscoveryResults[method]) {
     return res.status(404).json({
       error: "Method not found",
@@ -808,9 +817,9 @@ router.get("/test/field-discovery/:method", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   const results = fieldDiscoveryResults[method];
-  
+
   res.status(200).json({
     message: `Detailed field discovery results for ${method.toUpperCase()}`,
     method: method.toUpperCase(),
@@ -834,7 +843,7 @@ router.get("/test/field-discovery/:method", (req, res) => {
 // New endpoint to reset field discovery test results
 router.post("/test/field-discovery/reset", (req, res) => {
   const method = req.body.method ? req.body.method.toLowerCase() : 'all';
-  
+
   if (method === 'all') {
     // Reset all methods
     Object.keys(fieldDiscoveryResults).forEach(key => {
@@ -846,7 +855,7 @@ router.post("/test/field-discovery/reset", (req, res) => {
         status: 'NOT_STARTED'
       };
     });
-    
+
     res.status(200).json({
       message: "All field discovery test results reset successfully",
       resetMethods: Object.keys(fieldDiscoveryResults),
@@ -861,7 +870,7 @@ router.post("/test/field-discovery/reset", (req, res) => {
       completedAt: null,
       status: 'NOT_STARTED'
     };
-    
+
     res.status(200).json({
       message: `Field discovery test results for ${method.toUpperCase()} reset successfully`,
       resetMethod: method.toUpperCase(),
@@ -880,7 +889,7 @@ router.post("/test/field-discovery/reset", (req, res) => {
 router.post("/test/field-discovery/run", (req, res) => {
   const method = req.body.method ? req.body.method.toLowerCase() : null;
   const testData = req.body.testData || {};
-  
+
   if (!method || !fieldDiscoveryResults[method]) {
     return res.status(400).json({
       error: "Invalid method",
@@ -889,10 +898,10 @@ router.post("/test/field-discovery/run", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   try {
     const results = performFieldDiscovery(method.toUpperCase(), testData);
-    
+
     res.status(200).json({
       message: `Field discovery testing completed for ${method.toUpperCase()}`,
       method: method.toUpperCase(),
@@ -941,7 +950,7 @@ router.get("/test/field-discovery/config", (req, res) => {
 router.put("/test/field-discovery/config", (req, res) => {
   const method = req.body.method ? req.body.method.toLowerCase() : null;
   const config = req.body.config || {};
-  
+
   if (!method || !fieldDiscoveryConfig[method]) {
     return res.status(400).json({
       error: "Invalid method",
@@ -950,7 +959,7 @@ router.put("/test/field-discovery/config", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Update configuration
   if (config.documentedRequired) {
     fieldDiscoveryConfig[method].documentedRequired = config.documentedRequired;
@@ -964,7 +973,7 @@ router.put("/test/field-discovery/config", (req, res) => {
   if (config.actualRequired) {
     fieldDiscoveryConfig[method].actualRequired = config.actualRequired;
   }
-  
+
   res.status(200).json({
     message: `Field discovery configuration updated for ${method.toUpperCase()}`,
     method: method.toUpperCase(),
@@ -977,7 +986,7 @@ router.put("/test/field-discovery/config", (req, res) => {
 router.post("/test/simulate-backend", (req, res) => {
   const method = req.body.method ? req.body.method.toLowerCase() : null;
   const requestBody = req.body.requestBody || {};
-  
+
   if (!method || !fieldDiscoveryConfig[method]) {
     return res.status(400).json({
       error: "Invalid method",
@@ -986,9 +995,9 @@ router.post("/test/simulate-backend", (req, res) => {
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   const backendResult = simulateBackendValidation(method.toUpperCase(), requestBody);
-  
+
   res.status(200).json({
     message: `Backend simulation for ${method.toUpperCase()}`,
     method: method.toUpperCase(),
