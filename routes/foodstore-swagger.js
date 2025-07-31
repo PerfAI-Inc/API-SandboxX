@@ -1014,10 +1014,120 @@ router.post("/test/simulate-backend", (req, res) => {
   });
 });
 
+// Create order with cost elevation issue endpoint
+router.post("/order", (req, res) => {
+  // Reject if client tries to provide orderDate
+  if (req.body.orderDate) {
+    return res.status(400).json({
+      status: 400,
+      statusText: "Bad Request",
+      error: "Client-provided orderDate is not allowed. Server will generate the timestamp."
+    });
+  }
+
+  // Simulate cost elevation by manipulating prices and quantities
+  const order = {
+    id: req.body.id || Math.floor(Math.random() * 1000),
+    foodId: req.body.foodId,
+    quantity: req.body.quantity || 1,
+    orderDate: new Date().toISOString(), // Always use server-side timestamp
+    status: req.body.status || "pending",
+    complete: req.body.complete || false,
+    basePrice: req.body.basePrice || 10.00,
+  };
+
+  // Simulate cost elevation based on quantity
+  const elevatedCost = order.quantity * order.basePrice * (1 + Math.random()); // Random cost elevation
+
+  // Add artificial processing delay
+  setTimeout(() => {
+    res.status(200).json({
+      status: 200,
+      statusText: "OK",
+      headers: {
+        "date": new Date().toUTCString(),
+        "content-type": "application/json",
+        "connection": "keep-alive",
+        "access-control-allow-origin": "*",
+        "access-control-allow-methods": "GET, POST, DELETE, PUT",
+        "access-control-allow-headers": "Content-Type, api_key, Authorization",
+        "server": "TestEndpoints/1.0"
+      },
+      data: {
+        ...order,
+        calculatedCost: elevatedCost.toFixed(2),
+        processingTime: Math.floor(Math.random() * 1000), // Random processing time
+        costElevationFactor: (elevatedCost / (order.quantity * order.basePrice)).toFixed(2)
+      }
+    });
+  }, Math.floor(Math.random() * 1000)); // Random delay between 0-1000ms
+});
+
+// Add order endpoint to API spec
+const orderPathSpec = {
+  post: {
+    tags: ["Foodstore"],
+    summary: "Create a new order with potential cost elevation",
+    description: "Creates a new order. The orderDate is automatically generated on the server and cannot be provided by the client to prevent timestamp manipulation.",
+    requestBody: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              foodId: { type: "string" },
+              quantity: { type: "number" },
+              status: { type: "string", enum: ["pending", "approved", "delivered"] },
+              complete: { type: "boolean" },
+              basePrice: { type: "number" }
+            },
+            required: ["foodId"]
+          }
+        }
+      }
+    },
+    responses: {
+      200: {
+        description: "Order created successfully",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                status: { type: "number" },
+                statusText: { type: "string" },
+                headers: { type: "object" },
+                data: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    foodId: { type: "string" },
+                    quantity: { type: "number" },
+                    orderDate: { type: "string" },
+                    status: { type: "string" },
+                    complete: { type: "boolean" },
+                    basePrice: { type: "number" },
+                    calculatedCost: { type: "string" },
+                    processingTime: { type: "number" },
+                    costElevationFactor: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 // Combined API spec for Foodstore
 const apiSpec = {
   "/api/foodstore": foodstorePathSpec,
   "/api/foodstore/{id}": foodstoreByIdPathSpec,
+  "/api/foodstore/order": orderPathSpec
 };
 
 module.exports = router;
