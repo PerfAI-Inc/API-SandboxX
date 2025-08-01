@@ -9,8 +9,33 @@ const foodstorePathSpec = {
   // MODIFICATION START: Updated GET endpoint specification
   get: {
     tags: ["Foodstore"],
-    summary: "Get all foodstore data",
+    summary: "Get all foodstore data with pagination",
     security: [{ basicAuth: [] }],
+    parameters: [
+      {
+        name: "page",
+        in: "query",
+        description: "Page number (1-based)",
+        required: false,
+        schema: {
+          type: "integer",
+          default: 1,
+          minimum: 1
+        }
+      },
+      {
+        name: "limit",
+        in: "query",
+        description: "Number of items per page",
+        required: false,
+        schema: {
+          type: "integer",
+          default: 10,
+          minimum: 1,
+          maximum: 100
+        }
+      }
+    ],
     responses: {
       200: {
         description: "A list of food items without pagination",
@@ -564,11 +589,41 @@ function performFieldDiscovery(method, originalRequestBody) {
   return testResults;
 }
 
-// MODIFICATION START: Updated GET all handler
-// GET all
+// MODIFICATION START: Updated GET all handler with pagination
+// GET all with pagination
 router.get("/", (req, res) => {
-  // Return a flat array of food items, simulating a non-paginated response.
-  res.status(200).json(Object.values(foodstoreDB));
+  // Get pagination parameters from query string with defaults
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  // Validate pagination parameters
+  if (page < 1 || limit < 1 || limit > 100) {
+    return res.status(400).json({
+      error: "Invalid pagination parameters",
+      message: "Page must be >= 1 and limit must be between 1 and 100",
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // Get all items and apply pagination
+  const allItems = Object.values(foodstoreDB);
+  const { data, metadata } = require('../utils/helpers').paginateData(allItems, page, limit);
+
+  // Set pagination headers
+  res.set({
+    'X-Total-Count': metadata.totalItems.toString(),
+    'X-Page-Limit': metadata.itemsPerPage.toString(),
+    'X-Current-Page': metadata.currentPage.toString(),
+    'X-Total-Pages': metadata.totalPages.toString(),
+    'Access-Control-Expose-Headers': 'X-Total-Count, X-Page-Limit, X-Current-Page, X-Total-Pages'
+  });
+
+  // Return paginated response
+  res.status(200).json({
+    data,
+    pagination: metadata,
+    timestamp: new Date().toISOString()
+  });
 });
 // MODIFICATION END
 
