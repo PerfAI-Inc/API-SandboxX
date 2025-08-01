@@ -90,13 +90,13 @@ jobs:
         kubectl get pods -n perfai | grep perfai-engine-testendpoints
 
 
-### Email Alert Notification ###
+### Email Alert Notifcation ###
     - name: Send mail
       if: failure()
       uses: dawidd6/action-send-mail@v3.9.0
       with:
-          server_address: smtp.gmail.com
-          server_port: 465
+          server_address: smtp.office365.com
+          server_port: 587
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "🚨 Build Failure: ${{ github.repository }} #${{ github.run_number }} 🚨"
@@ -115,6 +115,7 @@ jobs:
              **Failure Summary:*
                - Please review the logs for more details: [View Logs] 
                    ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          to: yahyashareef@perfai.ai        
-          from: PerfAI          
+         # to: rashid@perfai.ai
+          to: engineering@perfai.ai
+          from: PerfAI        
        
