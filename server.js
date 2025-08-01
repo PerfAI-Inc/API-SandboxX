@@ -5,6 +5,7 @@ const openapi = require("@wesleytodd/openapi");
 // Import routers for endpoints
 const remediationRouter = require("./routes/automated-code-remediation");
 const medstoreRouter = require("./routes/medstore-swagger");
+const foodstoreRouter = require("./routes/foodstore-swagger");
 const authRouter = require("./routes/auth");
 const maliciousFileTestRouter = require("./routes/malicious-file-test");
 
@@ -62,10 +63,11 @@ const oapi = openapi({
       },
     },
   },
-  // Explicitly define paths for the remediation, medstore, and test-token routers
+  // Explicitly define paths for the remediation, medstore, foodstore, and test-token routers
   paths: {
     ...remediationRouter.apiSpec,
     ...medstoreRouter.apiSpec,
+    ...foodstoreRouter.apiSpec,
     ...authRouter.apiSpec,
     ...maliciousFileTestRouter.apiSpec,
   },
@@ -79,6 +81,9 @@ app.use("/api/remediation", oapi.path(remediationRouter.apiSpec), remediationRou
 
 // Mount the medstore router
 app.use("/api/medstore", oapi.path(medstoreRouter.apiSpec), medstoreRouter);
+
+// Mount the foodstore router
+app.use("/api/foodstore", oapi.path(foodstoreRouter.apiSpec), foodstoreRouter);
 
 // Mount the test token router
 app.use("/api/auth", oapi.path(authRouter.apiSpec), authRouter);
